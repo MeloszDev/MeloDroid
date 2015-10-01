@@ -1,0 +1,457 @@
+package com.dev.melosz.melodroid.activities;
+
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.Configuration;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewTreeObserver;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.dev.melosz.melodroid.R;
+import com.dev.melosz.melodroid.views.CardLayout;
+
+import java.util.Random;
+
+public class MemoryGameActivity extends AppCompatActivity implements
+        ViewTreeObserver.OnGlobalLayoutListener,
+        CardLayout.OnCardTouchListener {
+    // Helper handler for UI interaction delays
+    private Handler handler = new Handler();
+
+    // Array to hold the CardLayouts
+    private CardLayout[] cards;
+
+    // The game GridLayout
+    private GridLayout mGridLayout;
+
+    // Variables which will draw the columns and rows
+    private int numColumns;
+    private int numRows;
+    private int numCards;
+
+    // holder cards to check matching and keep track of currently selected card
+    private CardLayout currentCard;
+    private CardLayout cardToMatch;
+
+    // Cases to check if the deck needs to be initially built or to simply redraw with rebuild True
+    private boolean cardsBuilt = false;
+    private boolean rebuild = false;
+
+    // This int ensures only 2 cards MAX are selected at a time
+    private int accumulator;
+
+    private int score;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_memory_game);
+        // Get the GridLayout container and apply a global listener to obtain WxH
+        mGridLayout = (GridLayout) findViewById(R.id.card_grid_container);
+        mGridLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
+        // Build the game variables
+        numColumns = mGridLayout.getColumnCount();
+        numRows = mGridLayout.getRowCount();
+        numCards = numColumns * numRows;
+        accumulator = 0;
+        score = 0;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_memory_game, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.memory_new_game) {
+            String message =
+                    "Are you sure you want to start a new game? Any progress will be lost.";
+            buildConfirmDialog(this, message);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Called when the views are drawn/re-drawn
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onGlobalLayout(){
+        if(!cardsBuilt) {
+            buildCards();
+        }
+
+        // Must be called for the screens to render properly.  Handles deprecated pre-JellyBean
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+            mGridLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        else
+            mGridLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+    }
+
+    /**
+     * Called when the user changes screen orientation. Wipes the gridlayout and determines the new
+     * column and row count depending on the orientation
+     * @param newConfig Configuration the new screen configuration
+     */
+    @Override
+    public void onConfigurationChanged(final Configuration newConfig) {
+        System.out.println("ORIENTATION CHANGE: " + newConfig);
+        if(mGridLayout != null) {
+            // tear down current cards for re-draw
+            mGridLayout.removeAllViews();
+
+            // determine column and row count depending on orientation and set them back
+            mGridLayout.setColumnCount(
+                    newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ? 4 : 8);
+            mGridLayout.setRowCount(
+                    newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ? 6 : 3);
+            numColumns = mGridLayout.getColumnCount();
+            numRows = mGridLayout.getRowCount();
+
+            // Delay the rebuilding of the cards so the views can update.
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    rebuild = true;
+                    buildCards();
+                }
+            }, 250);
+
+        }
+        super.onConfigurationChanged(newConfig);
+    };
+
+    /**
+     * This method listens for the clicks of the cards from the CardLayout class
+     * @param card CardLayout the wrapper which holds the front and back cards
+     * @param selected whether or not this view has been toggled
+     */
+    @Override
+    public void OnCardSelected(CardLayout card, boolean selected) {
+        int tag = (int) card.getBackCard().getTag();
+        String rName = getResources().getResourceName(tag);
+        //get the id string
+        String idString = " \nCard ID: [" + card.getId() + "]\n" +
+                "Card Tag: [" + tag + "]\n" +
+                "BackCard ID: [" + card.getBackCard().getId() + "]\n" +
+                "Selected: [" + card.isSelected() + "]\n" +
+                "Matched: [" + card.isMatched() + "]\n" +
+                "Resource Name : [" + rName + "]";
+
+        Log.i("CARD", idString);
+        if(!card.isSelected() && !card.isMatched() && accumulator != 2) {
+            // initial selection
+            if (currentCard == null || accumulator == 0) {
+                currentCard = card;
+                flipCard(card, false);
+            }
+            // first time second card is chosen
+            else if (cardToMatch == null || accumulator == 1) {
+                cardToMatch = currentCard;
+                currentCard = card;
+                flipCard(card, true);
+            }
+        }
+    }
+
+    /**
+     * This method performs the animation when a card is clicked
+     * @param card the CardLayout card
+     */
+    public void flipCard (CardLayout card, boolean check) {
+        // New instances of AnimationSets so they don't run into each other
+        AnimatorSet setL = (AnimatorSet) AnimatorInflater.loadAnimator(
+                this, R.animator.flip_left_out);
+        AnimatorSet setR = (AnimatorSet) AnimatorInflater.loadAnimator(
+                this, R.animator.flip_right_in);
+
+        final boolean runCheck = check;
+        accumulator++;
+
+        // Build and start the animation for the card flip
+        setL.setTarget(card.getFrontCard());
+        setR.setTarget(card.getBackCard());
+        setL.start();
+        setR.start();
+
+        // Set selected flag on the current card
+        card.setSelected(true);
+
+        // Delay the next check until the flip has finished.
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (runCheck) {
+                    checkMatch();
+                }
+            }
+        }, 500);
+    }
+
+    /**
+     * Flips the selected cards back when they do not match
+     * @param card1 CardLayout the currently selected card
+     * @param card2 CardLayout the card that was match-checked
+     */
+    public void flipCardBack(CardLayout card1, CardLayout card2){
+        // New instances of AnimationSets so they don't run into each other
+        AnimatorSet setR1 = (AnimatorSet) AnimatorInflater.loadAnimator(
+                this, R.animator.flip_right_out);
+        AnimatorSet setR2 = (AnimatorSet) AnimatorInflater.loadAnimator(
+                this, R.animator.flip_right_out);
+        AnimatorSet setL1 = (AnimatorSet) AnimatorInflater.loadAnimator(
+                this, R.animator.flip_left_in);
+        AnimatorSet setL2 = (AnimatorSet) AnimatorInflater.loadAnimator(
+                this, R.animator.flip_left_in);
+
+        // set the targets for the two flip animations
+        setR1.setTarget(card1.getBackCard());
+        setL1.setTarget(card1.getFrontCard());
+        setR2.setTarget(card2.getBackCard());
+        setL2.setTarget(card2.getFrontCard());
+
+        // start the animations
+        setR1.start();
+        setL1.start();
+        setR2.start();
+        setL2.start();
+
+        // reset the selected flag
+        card1.setSelected(false);
+        card2.setSelected(false);
+
+        // This insures only 2 cards max are selected at a time
+        if (accumulator == 2) {
+            accumulator = 0;
+        }
+    }
+
+    /**
+     * Checks if the two selected cards are a match by the tag assigned in CardLayout
+     */
+    private void checkMatch() {
+        String message;
+        int[] matcher = new int[]{
+                (int) currentCard.getBackCard().getTag(),
+                (int) cardToMatch.getBackCard().getTag()
+        };
+        // Its a match, and check if the game is completed
+        if(matcher[0] == matcher[1]){
+            // Add 50 points for ever match
+            score += 50;
+
+            message = "MATCH WITH TAGS: \ncurrentCard: [" + matcher[0] + "] \ncardToMatch: ["
+                    + matcher[1]  + "] \nScore: [" + score + "]";
+            Log.i("MATCH", message);
+
+            // set the match flag
+            currentCard.setMatched(true);
+            cardToMatch.setMatched(true);
+            // This insures only 2 cards max are selected at a time
+            if (accumulator == 2) {
+                accumulator = 0;
+            }
+
+            // check if all cards have been matched
+            gameComplete();
+        }
+        else {
+            // Deduct 10 points from the score on every non-match
+            score -= 10;
+
+            message = "NO MATCH WITH TAGS \ncurrentCard: [" + matcher[0] + "] \ncardToMatch: ["
+                    + matcher[1] + "] \nScore: [" + score + "]";
+            Log.i("NO MATCH", message);
+
+            // flip both cards back to their original state
+            flipCardBack(currentCard, cardToMatch);
+        }
+    }
+
+    /**
+     * Method to check if all cards have been matched. Called upon each positive match.
+     */
+    private void gameComplete(){
+        boolean complete = false;
+
+        // Check if any cards are not matched, and break the loop if so.
+        for(CardLayout card : cards) {
+            if(!card.isMatched()){
+                complete = false;
+                break;
+            }
+            else
+                complete = true;
+        }
+        if(complete) {
+            Toast.makeText(this,
+                    "You have completed the game with a score of: [" + score + "] Congratulations!",
+                    Toast.LENGTH_LONG).show();
+
+            // Wait 3 seconds, then ask the user if they would like to start a new game
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    String message = "Would you like to start a new game?";
+                    buildConfirmDialog(MemoryGameActivity.this, message);
+                }
+            }, 3000);
+        }
+    }
+    /**
+     *
+     */
+    private void buildCards() {
+        // obtain the WxH of the current view
+        int gridHeight = mGridLayout.getHeight();
+        int gridWidth = mGridLayout.getWidth();
+
+        // get the WxH for each CardLayout so they are evenly spaced
+        int cardWidth = gridWidth / numColumns;
+        int cardHeight = gridHeight / numRows;
+
+        CardLayout.LayoutParams params = new CardLayout.LayoutParams(cardWidth, cardHeight);
+
+        // Only run on initialization
+        if (!cardsBuilt) {
+            cards = new CardLayout[numCards];
+            for (int i = 0; i < cards.length; i++) {
+                CardLayout newCard = new CardLayout(this, params);
+                newCard.setOnCardTouchListener(this);
+                cards[i] = newCard;
+                mGridLayout.addView(newCard);
+            }
+            setBackCards(params);
+            cardsBuilt = true;
+        }
+        // Run each time screen orientation is changed
+        else if(rebuild) {
+            for (CardLayout card : cards) {
+                card.setLayoutParams(params);
+                card.setCardDimensions(params);
+                mGridLayout.addView(card);
+            }
+        }
+    }
+
+    /**
+     * Sets the hidden backCards for each CardLayout.
+     * @param params LayoutParams to set on the new backCard
+     */
+    public void setBackCards(CardLayout.LayoutParams params) {
+        int[] imgVals = getImgVals();
+        int i = 0;
+        for(CardLayout card : cards) {
+            ImageView newBackCard = new ImageView(this);
+            newBackCard.setLayoutParams(params);
+            card.setBackCard(newBackCard, imgVals[i]);
+            i++;
+        }
+    }
+
+    /**
+     * Assigns images in an array and shuffles them
+     * @return imgVals the shuffled array
+     */
+    public int[] getImgVals(){
+        // Store all of the images. For now, only 24 supported.
+        int[] imgVals = new int[]{
+                R.mipmap.clock96, // Designed by Freepik
+                R.mipmap.clock96, // Designed by Freepik
+                R.mipmap.locked59, // Designed by Freepik
+                R.mipmap.locked59, // Designed by Freepik
+                R.mipmap.hotdrink2, // Designed by Freepik
+                R.mipmap.hotdrink2, // Designed by Freepik
+                R.mipmap.icon1,
+                R.mipmap.icon1,
+                R.mipmap.linkedin,
+                R.mipmap.linkedin,
+                R.mipmap.logo,
+                R.mipmap.logo,
+                R.mipmap.magnifier13, // Designed by Freepik
+                R.mipmap.magnifier13, // Designed by Freepik
+                R.mipmap.plan,
+                R.mipmap.plan,
+                R.mipmap.three115, // Designed by Freepik
+                R.mipmap.three115, // Designed by Freepik
+                R.mipmap.phone325, // Designed by Freepik
+                R.mipmap.phone325, // Designed by Freepik
+                R.mipmap.x_circle,
+                R.mipmap.x_circle,
+                R.mipmap.ic_launcher,
+                R.mipmap.ic_launcher
+        };
+
+        Random rand = new Random();
+
+        // Shuffle the cards to randomize them
+        for(int i = 0; i < imgVals.length; i++) {
+            int randomPosition = rand.nextInt(imgVals.length);
+            int temp = imgVals[i];
+            imgVals[i] = imgVals[randomPosition];
+            imgVals[randomPosition] = temp;
+        }
+        return imgVals;
+    }
+
+    /**
+     * reset all globals and rebuild the cards
+     */
+    public void reset() {
+        mGridLayout.removeAllViews();
+        score = 0;
+        accumulator = 0;
+        currentCard = null;
+        cardToMatch = null;
+        cards = null;
+        cardsBuilt = false;
+        buildCards();
+    }
+
+    /**
+     * Builds a confirmation Dialog box with Yes or No as choices
+     *
+     * @param context the Activity Context
+     * @param message String the message to display in the dialog
+     */
+    private void buildConfirmDialog(final Context context, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        reset();
+                    }
+
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+}

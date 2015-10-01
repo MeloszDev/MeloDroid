@@ -1,0 +1,152 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/registration_screen_fragment"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:fillViewport="true"
+              tools:context="fragments.RegistrationFragment" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:drawable/screen_background_light"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="30dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/logo_image"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="15dp"
+                android:background="@mipmap/logobig"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:id="@+id/helper_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:layout_marginTop="-7dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:id="@+id/username_field_reg"
+                android:inputType="textPersonName"
+                android:hint="Username"
+                android:maxLength="16"
+                android:textColorHint="#36454b"
+                android:background="@drawable/rounded_corners"
+                android:gravity="center"
+                android:textColor="#36454b"
+                android:elevation="2dp" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:id="@+id/password_field_reg"
+                android:inputType="textPassword"
+                android:hint="Password"
+                android:maxLength="24"
+                android:textColorHint="#36454b"
+                android:background="@drawable/rounded_corners"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textColor="#36454b"
+                android:elevation="2dp" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:id="@+id/password_field_reg_reenter"
+                android:inputType="textPassword"
+                android:hint="Re-enter Password"
+                android:maxLength="24"
+                android:textColorHint="#36454b"
+                android:background="@drawable/rounded_corners"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textColor="#36454b"
+                android:elevation="2dp" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:id="@+id/email_field"
+                android:inputType="textEmailAddress"
+                android:hint="Email Address"
+                android:maxLength="34"
+                android:textColorHint="#36454b"
+                android:background="@drawable/rounded_corners"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textColor="#36454b"
+                android:elevation="2dp" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:id="@+id/zip_address_field"
+                android:inputType="number"
+                android:hint="5 Digit Zip Code"
+                android:maxLength="5"
+                android:textColorHint="#36454b"
+                android:background="@drawable/rounded_corners"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textColor="#36454b"
+                android:elevation="2dp" />
+            <com.dev.melosz.melodroid.classes.IMEListenerEditText
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:phoneNumber="true"
+                android:id="@+id/phone_number_field"
+                android:inputType="phone"
+                android:hint="Phone Number"
+                android:maxLength="20"
+                android:textColorHint="#36454b"
+                android:background="@drawable/rounded_corners"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textColor="#36454b"
+                android:elevation="2dp">
+            </com.dev.melosz.melodroid.classes.IMEListenerEditText>
+
+            <Button
+                android:id="@+id/submit_button"
+                android:text="@string/sign_in_button"
+                android:textColor="@drawable/text_color_signup"
+                android:textSize="30sp"
+                android:textAllCaps="false"
+                android:layout_width="150dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:background="@android:drawable/btn_default"
+                android:typeface="sans"
+                style="@style/button_text"/>
+
+            <TextView
+                android:id="@+id/clear_all_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:textColor="@drawable/link_text_color"
+                android:text="@string/clear_fields"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:paddingBottom="10dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

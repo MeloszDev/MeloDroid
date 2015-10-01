@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.dev.melosz.melodroid.activities.HomeScreenActivity">
+
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+          android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_account" android:title="@string/action_account"
+          android:orderInCategory="200" app:showAsAction="never" />
+    <item android:id="@+id/action_memory_game" android:title="@string/action_memory_game"
+          android:orderInCategory="300" app:showAsAction="never" />
+    <item android:id="@+id/action_check_tables" android:title="@string/action_check_tables"
+          android:orderInCategory="400" app:showAsAction="never" />
+    <item android:id="@+id/action_add_table" android:title="@string/action_add_table"
+          android:orderInCategory="500" app:showAsAction="never" />
+    <item android:id="@+id/action_drop_table" android:title="@string/action_drop_table"
+          android:orderInCategory="600" app:showAsAction="never" />
+    <item android:id="@+id/action_logout" android:title="@string/action_logout"
+          android:orderInCategory="700" app:showAsAction="never" />
+    <item android:id="@+id/action_draw_gl" android:title="@string/action_draw_gl"
+          android:orderInCategory="700" app:showAsAction="never" />
+</menu>

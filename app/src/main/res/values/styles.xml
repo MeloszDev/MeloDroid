@@ -1,0 +1,18 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!-- Login & Registration button text.  The shadow provides a bevel effect. -->
+    <style name="button_text">
+        <item name="android:textColor" >#ffffff</item>
+        <item name="android:textSize" >30dp</item>
+        <item name="android:textStyle" >bold</item>
+        <item name="android:shadowColor" >#D1D1D1</item>
+        <item name="android:shadowDx" >2</item>
+        <item name="android:shadowDy" >2</item>
+        <item name="android:shadowRadius" >5</item>
+    </style>
+</resources>
