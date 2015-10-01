@@ -5,7 +5,7 @@
 
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
           android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_account" android:title="@string/action_account"
+    <item android:id="@+id/action_user_management" android:title="@string/action_user_management"
           android:orderInCategory="200" app:showAsAction="never" />
     <item android:id="@+id/action_memory_game" android:title="@string/action_memory_game"
           android:orderInCategory="300" app:showAsAction="never" />

@@ -33,7 +33,8 @@ public class HomeScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_screen);
         CTX = this;
 
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key), CTX.MODE_PRIVATE);
+        prefs = CTX.getSharedPreferences
+                (getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String currentUser = prefs.getString(getString(R.string.preference_stored_user), "Default");
         System.out.println("Stored user is: " + prefs.getString
                 (getString(R.string.preference_stored_user), "No User Stored"));
@@ -58,7 +59,7 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean returnMe;
+        boolean returnMe = false;
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -66,17 +67,15 @@ public class HomeScreenActivity extends AppCompatActivity {
         System.out.println("ID for the item is : " + id + " Which is: " + item.getTitle());
 
         // TODO: DRAMATICALLY CHANGE THE MENU OPTIONS
-        //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings :
                 System.out.println("So you want to go to settings, huh?");
                 uDAO.getAll(AppUserContract.AppUserEntry.TABLE_NAME);
                 returnMe = true;
                 break;
-            case R.id.action_account :
-                System.out.println("Building and saving New User");
-                //                uDAO.saveNewUser(dh, makeCreds());
-                returnMe = true;
+            case R.id.action_user_management :
+                Intent userManagementIntent = new Intent(this, UserManagementActivity.class);
+                startActivity(userManagementIntent);
                 break;
             case R.id.action_memory_game :
                 Intent cardIntent = new Intent(this, MemoryGameActivity.class);
@@ -115,8 +114,8 @@ public class HomeScreenActivity extends AppCompatActivity {
     }
     /**
      *
-     * @param context
-     * @param message
+     * @param context Context the Activity ApplicationContext
+     * @param message String the message to present to the user
      */
     private void buildConfirmDialog(Context context, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

@@ -16,10 +16,7 @@
         <supports-gl-texture android:name="GL_OES_compressed_ETC1_RGB8_texture" />
         <supports-gl-texture android:name="GL_OES_compressed_paletted_texture" />
 
-        <activity
-            android:name=".activities.BaseActivity"
-            android:label="@string/app_name" >
-        </activity>
+        <!-- TODO: Remove along with the class itself -->
         <activity
             android:name=".activities.MyActivity"
             android:label="@string/app_name"
@@ -51,14 +48,17 @@
             android:name=".activities.MemoryGameActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_memory_game"
-            android:parentActivityName=".activities.BaseActivity" >
+            android:parentActivityName=".activities.HomeScreenActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dev.melosz.melodroid.activities.BaseActivity" />
+                android:value="com.dev.melosz.melodroid.activities.HomeScreenActivity" />
         </activity>
         <activity
-            android:name=".activities.UserManagmentActivity"
-            android:label="@string/title_activity_user_managment" >
+            android:name=".activities.UserManagementActivity"
+            android:label="@string/title_activity_user_management" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dev.melosz.melodroid.activities.HomeScreenActivity" />
         </activity>
     </application>
 

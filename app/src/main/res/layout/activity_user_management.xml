@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.dev.melosz.melodroid.activities.UserManagmentActivity">
+    tools:context="com.dev.melosz.melodroid.activities.UserManagementActivity">
 
     <!-- A vertical LinearLayout in a ScrollView. This emulates a ListView (and is lighter weight
              than a ListView when there aren't many rows). -->
