@@ -8,14 +8,20 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by marek.kozina on 9/21/2015.
  * Abstract DAO class containing constructors for the site-wide database and generic database
  * methods which are not defined by an entity DAO class.  This class should be extended for any
  * further implementations of {ENTITY}DAO classes.
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *                              2. Fixed getAll method and refactor to return list instead of HashMap
+ *
  */
 public abstract class AbstractDAO {
     // Class Name
@@ -75,38 +81,44 @@ public abstract class AbstractDAO {
     /**
      * Retrieve the list of all rows and columns for a particular table stored in the DB.
      * @param tableName the name of the table we wish to getAll from
-     * @return Map of column and values
+     * @return List of column and values
      */
-    public Map<String, String> getAll(String tableName) {
-        Map<String, String> userMap = new HashMap<>();
+    public List getAll(String tableName) {
+        List<String> entries = new ArrayList<>();
 
         Cursor c = database.query(tableName, null, null, null, null, null, null);
+        int i = 0;
         while (c != null && c.moveToNext()) {
-            for(int i=0; i < c.getColumnCount(); i++) {
-                userMap.put(c.getColumnName(i), c.getString(i));
+            // i represents the row count (pre-increment to start output at 1)
+            i++;
+            // j represents the column count
+            for (int j = 0; j < c.getColumnCount(); j++) {
+                String entry = "Table: [" + tableName +
+                               "] Row #[" + i +
+                               "] Column Name: [" + c.getColumnName(j) +
+                               "] Entry: [" + c.getString(j) + "].";
+                entries.add(entry);
             }
         }
-        // TODO: Remove in production or move to Log.i(foo, bar);
-        System.out.println("# of Columns: [" + c.getColumnCount() + "].");
-        for(Map.Entry entry : userMap.entrySet()){
-            System.out.println("Column Name: [" + entry.getKey() +
-                    "] Value: [" + entry.getValue() + "].");
-        }
-        if(c != null) c.close();
 
-        return userMap;
+        // Log each entity
+        for(String entry : entries){
+            Log.i(CLASS_NAME, entry);
+        }
+
+        return entries;
     }
 
     /**
      * Generic method to check and print out all of the tables that in exist in the app DB
      */
     public void checkTables() {
-        String[] outMessage = new String[]{};
+        List<String> outMessage = new ArrayList<>();
         Cursor c = database.rawQuery("select name FROM sqlite_master WHERE type = 'table'", null);
         if (c.moveToFirst()) {
             int i = 0;
             while (!c.isAfterLast()) {
-                outMessage[i] = "Table #["+i+"] in our Database: [" + c.getString(0) + "]\n";
+                outMessage.add("Table #["+ i +"] in our Database: [" + c.getString(0) + "]");
                 i++;
                 c.moveToNext();
             }
@@ -116,7 +128,6 @@ public abstract class AbstractDAO {
         for(String msg : outMessage){
             Log.i(CLASS_NAME, msg);
         }
-
     }
 
     /**

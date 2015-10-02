@@ -7,12 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * DAO class to support the creation and modification of this App's database and its tables.  The
- *
- * TODO: May eventually want to extract methods into their own DAO classes or change this class to
- * an interface in order to extend to subclasses for different modules which require persistence.
- *
  * Created by marek.kozina on 8/25/2015.
+ * Singleton DatabaseHelper which is called by DAO classes to process database operations.
+ *
+ *    Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Declare this DatabaseHelper to insure singleton

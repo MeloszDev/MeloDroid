@@ -3,7 +3,7 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.dev.melosz.melodroid.activities.HomeScreenActivity">
 
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_get_all_users" android:title="@string/action_get_all_users"
           android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_user_management" android:title="@string/action_user_management"
           android:orderInCategory="200" app:showAsAction="never" />

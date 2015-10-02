@@ -29,7 +29,15 @@ import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.classes.IMEListenerEditText;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
 
-
+/**
+ * Created by Marek Kozina 09/15/2015.
+ * Pager-fragment Registration tab with user-info input fields with a changing helper TextView
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *                              2. Fixed various validation bugs in the passwords & phone fields
+ */
 public class RegistrationFragment extends Fragment implements View.OnFocusChangeListener {
     // Application Context
     private Context CTX;
@@ -203,13 +211,24 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                 return false;
             }
         });
+        // Listen for Back button
+        phoneET.setKeyImeChangeListener(new IMEListenerEditText.KeyImeChange() {
+            @Override
+            public void onKeyIme(int keyCode, KeyEvent event) {
+                // TODO
+            }
+        });
 
+        // This will format the phone number EditText with special characters
         phoneET.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         // Register the clear all TextView click
         clearAllTV.setOnClickListener(new TextView.OnClickListener(){
             @Override
             public void onClick(View v){
+                for(EditText et : ET_BUNDLE) {
+                    et.setText("");
+                }
                 clearAllFocus();
             }
         });
@@ -359,7 +378,6 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                     break;
             }
         }
-        FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
     }
 
     /**

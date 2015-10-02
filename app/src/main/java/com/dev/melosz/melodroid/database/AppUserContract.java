@@ -5,10 +5,14 @@ import android.provider.BaseColumns;
 import com.dev.melosz.melodroid.classes.AppUser;
 
 /**
+ * Created by marek.kozina on 8/25/2015.
  * This contract class defines and specifies the layout of the AppUser DB schema in a systematic and
  * self documenting way.
  *
- * Created by marek.kozina on 8/25/2015.
+ *    Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *
  */
 public final class AppUserContract {
     /**

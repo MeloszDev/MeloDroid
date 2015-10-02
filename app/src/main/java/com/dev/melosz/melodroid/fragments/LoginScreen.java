@@ -1,11 +1,11 @@
 package com.dev.melosz.melodroid.fragments;
 
-import android.graphics.Paint;
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -24,6 +24,12 @@ import com.dev.melosz.melodroid.utils.FragmentUtil;
 
 /**
  * Created by marek.kozina on 9/1/2015.
+ * Pager-fragment Login Tab with UserName & Password input fields and a forgot password link.
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *
  */
 public class LoginScreen extends Fragment {
     // Application context
@@ -212,8 +218,7 @@ public class LoginScreen extends Fragment {
                 new TextView.OnClickListener() {
                     public void onClick(View v) {
                         int duration = Toast.LENGTH_SHORT;
-                        Toast toast = Toast.makeText(ctx, msg, duration);
-                        toast.show();
+                        Toast.makeText(ctx, msg, duration).show();
                     }
                 }
         );

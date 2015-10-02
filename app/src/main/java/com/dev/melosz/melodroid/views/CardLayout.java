@@ -1,17 +1,23 @@
 package com.dev.melosz.melodroid.views;
 
+import android.R.drawable;
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.R.drawable;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
 
 /**
  * Created by marek.kozina on 9/28/2015.
+ * Custom subclass of a Relative Layout which contains two image views to represent the front and
+ * back cards for the memory game.
+ *
+ *    Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header & updated resource image
+ *
  */
 public class CardLayout extends RelativeLayout {
     private static final String CLASS = CardLayout.class.getSimpleName();
@@ -41,7 +47,7 @@ public class CardLayout extends RelativeLayout {
         ImageView iv = new ImageView(context);
         iv.setLayoutParams(params);
         iv.setId(FUTIL.generateViewId());
-        iv.setImageResource(R.mipmap.meto_card);
+        iv.setImageResource(R.mipmap.meto_card_test);
         iv.setBackgroundResource(drawable.dialog_holo_light_frame);
         setFrontCard(iv);
 

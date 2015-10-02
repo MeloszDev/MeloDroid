@@ -6,9 +6,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +22,18 @@ import com.dev.melosz.melodroid.views.CardLayout;
 
 import java.util.Random;
 
+/**
+ * Created by Marek Kozina 09/28/2015
+ * Activity which runs a simple 6x4 or 8x3 Memory game depending on orientation.  Plans for future
+ * implementation are polishing the logo "frontCard" image so it's not so bland, new game with
+ * different card count (4x4, 8x6, 12x4, etc.), and new graphic icons in which are selected randomly
+ * depending on the card count.
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *
+ */
 public class MemoryGameActivity extends AppCompatActivity implements
         ViewTreeObserver.OnGlobalLayoutListener,
         CardLayout.OnCardTouchListener {
@@ -320,6 +332,7 @@ public class MemoryGameActivity extends AppCompatActivity implements
             }, 3000);
         }
     }
+
     /**
      *
      */

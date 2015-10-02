@@ -15,6 +15,14 @@
               android:layout_height="wrap_content"
               android:paddingLeft="?android:listPreferredItemPaddingLeft" />
 
+    <!-- A button that, when pressed, will open the editUser fragment if the current user is that user. -->
+    <ImageButton android:id="@+id/edit_button"
+                 android:layout_width="48dp"
+                 android:layout_height="match_parent"
+                 android:src="@mipmap/pencil112"
+                 android:background="?android:selectableItemBackground"
+                 android:contentDescription="@string/action_remove_user" />
+
     <!-- A button that, when pressed, will delete this list item row from its container. -->
     <ImageButton android:id="@+id/delete_button"
                  android:layout_width="48dp"

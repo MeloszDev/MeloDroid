@@ -15,6 +15,13 @@ import java.util.List;
 /**
  * Created by marek.kozina on 8/25/2015.
  * Subclass of the AbstractDAO to handle all AppUser related database operations.
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header.
+ *                              2. Removed KEY_ID from makeUserCVs since it is a generated id field.
+ *                              3. Fixed getAllUsers method infinite loop
+ *
  */
 public class UserDAO extends AbstractDAO {
     private final String CLASS_NAME = UserDAO.class.getSimpleName();
@@ -80,7 +87,8 @@ public class UserDAO extends AbstractDAO {
             Log.e("ERROR:", e.getMessage());
         }
         finally {
-            Log.i(CLASS_NAME, "User: " + user.getUserName() + " account updated.");
+            Log.i(CLASS_NAME, "User: " + user.getUserName() + " account updated. Fields below: "
+                    + FUTIL.prettyPrintObject(user));
         }
     }
 
@@ -152,7 +160,7 @@ public class UserDAO extends AbstractDAO {
      * @param user AppUser the user to be deleted
      * @return boolean whether or not the delete was successful
      */
-    public boolean deleteUser (AppUser user) {
+    public boolean deleteUser(AppUser user) {
         try
         {
             Log.i(CLASS_NAME, "Attempting to delete user: [" + user.getUserName()
@@ -173,22 +181,25 @@ public class UserDAO extends AbstractDAO {
      * @return ArrayList of AppUsers
      */
     public List<AppUser> getAllUsers() {
-        List<AppUser> users = new ArrayList<AppUser>();
-
+        List<AppUser> users = new ArrayList<>();
         String sql = "select * from " + USER_TABLE_NAME;
-
         Cursor c = database.rawQuery(sql, null);
 
+        // If the query was successful, execute for each entry
         if (c != null && c.moveToFirst()) {
             while (!c.isAfterLast()) {
+                // For each entity, make a new AppUser and add it to the users list
                 AppUser user = makeUserByCursor(c);
                 users.add(user);
-            }
-            c.close();
-            for(AppUser u : users) {
-                Log.i(USER_TABLE_NAME, "Found user: " + FUTIL.prettyPrintObject(u));
+                c.moveToNext();
             }
         }
+        c.close();
+
+        for(AppUser u : users) {
+            Log.i(USER_TABLE_NAME, "Found user: " + FUTIL.prettyPrintObject(u));
+        }
+
         return users;
     }
 
@@ -206,7 +217,8 @@ public class UserDAO extends AbstractDAO {
      */
     private ContentValues makeUserCVs(AppUser user) {
         ContentValues cvs = new ContentValues();
-        cvs.put(KEY_ID, user.getId());
+
+        // KEY_ID is generated so it is not populated as a ContentValue
         cvs.put(KEY_USERNAME, user.getUserName());
         cvs.put(KEY_PASSWORD, user.getPassword());
         cvs.put(KEY_FIRSTNAME, user.getFirstName());

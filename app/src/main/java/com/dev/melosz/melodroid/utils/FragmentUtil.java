@@ -21,6 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by marek.kozina on 9/8/2015.
  * Helper Utility class for all Activities and Fragments
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *                              2. Added registration page password clause to enableButton methods
+ *
  */
 public class FragmentUtil {
     // Used for generating viewIDs
@@ -48,7 +54,8 @@ public class FragmentUtil {
                 disableButton = false;
                 break;
             }
-            else if(et.getId() == R.id.password_field && checkMinLength(5, et)) {
+            else if((et.getId() == R.id.password_field ||
+                     et.getId() == R.id.password_field_reg) && checkMinLength(5, et)) {
                 disableButton = false;
                 break;
             }
@@ -74,7 +81,8 @@ public class FragmentUtil {
                 disableButton = false;
                 break;
             }
-            else if(et.getId() == R.id.password_field && checkMinLength(5, et)) {
+            else if((et.getId() == R.id.password_field ||
+                     et.getId() == R.id.password_field_reg) && checkMinLength(5, et)) {
                 disableButton = false;
                 break;
             }

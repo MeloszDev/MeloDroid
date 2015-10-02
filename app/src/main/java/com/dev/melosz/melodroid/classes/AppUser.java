@@ -3,9 +3,14 @@ package com.dev.melosz.melodroid.classes;
 import java.io.Serializable;
 
 /**
- * Class for an AppUser which will eventually be stored in a SQLite DB
  *
  * Created by marek.kozina on 8/25/2015.
+ * Entity class for storing users and their account & limited personal information.
+ *
+ *    Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *
  */
 public class AppUser implements Serializable {
     /**

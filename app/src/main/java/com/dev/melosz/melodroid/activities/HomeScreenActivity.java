@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,14 +15,26 @@ import android.view.MenuItem;
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.AppUserContract;
-import com.dev.melosz.melodroid.database.DatabaseHelper;
 import com.dev.melosz.melodroid.database.UserDAO;
 
+/**
+ * Created by Marek Kozina 09/28/2015
+ * Main home screen activity where the user lands after logging in or registering successfully.
+ * Contains the main menu options and a message to the user for now.  Further functionality will
+ * be implemented.
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *                              2. Removed or replaced println statements with Logs
+ *                              3. Removed unecessary database variables and corrected instantiation
+ *                                 of DAO class
+ *
+ */
 public class HomeScreenActivity extends AppCompatActivity {
+    private final String CLASS_NAME = HomeScreenActivity.class.getSimpleName();
     private AppUser mainUser;
     private UserDAO uDAO;
-    private DatabaseHelper dh;
-    private SQLiteDatabase db;
     private Context CTX;
     private SharedPreferences prefs;
 
@@ -36,14 +47,10 @@ public class HomeScreenActivity extends AppCompatActivity {
         prefs = CTX.getSharedPreferences
                 (getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String currentUser = prefs.getString(getString(R.string.preference_stored_user), "Default");
-        System.out.println("Stored user is: " + prefs.getString
-                (getString(R.string.preference_stored_user), "No User Stored"));
+        Log.i(CLASS_NAME, "Stored user is: "
+                + prefs.getString(getString(R.string.preference_stored_user), "No User Stored"));
 
-        // TODO: REMOVE WHEN DB CLEANUP IS COMPLETED
-        // Initialize the DB for the app
-//        dh = dh.getInstance(this);
-//        db = dh.getReadableDatabase();
-
+        // Open or re-open the DAO & database
         uDAO = new UserDAO(CTX);
         uDAO.open();
 
@@ -64,12 +71,12 @@ public class HomeScreenActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        System.out.println("ID for the item is : " + id + " Which is: " + item.getTitle());
+        Log.i(CLASS_NAME, "ID for the item is : " + id + " Which is: " + item.getTitle());
 
         // TODO: DRAMATICALLY CHANGE THE MENU OPTIONS
         switch (id) {
-            case R.id.action_settings :
-                System.out.println("So you want to go to settings, huh?");
+            case R.id.action_get_all_users :
+                Log.i(CLASS_NAME, "Logging all data from: " + uDAO.database.toString());
                 uDAO.getAll(AppUserContract.AppUserEntry.TABLE_NAME);
                 returnMe = true;
                 break;
@@ -83,22 +90,21 @@ public class HomeScreenActivity extends AppCompatActivity {
                 returnMe = true;
                 break;
             case R.id.action_check_tables :
-                System.out.println("Checking tables in: " + db.toString());
+                Log.i(CLASS_NAME, "Checking tables in: " + uDAO.database.toString());
                 uDAO.checkTables();
                 returnMe = true;
                 break;
             case R.id.action_add_table :
-                System.out.println("Adding User Table to: " + db.toString());
+                Log.i(CLASS_NAME, "Adding User Table to: " + uDAO.database.toString());
                 uDAO.addAppUserTable();
                 returnMe = true;
                 break;
             case R.id.action_drop_table :
-                System.out.println("Dropping User Table from: " + db.toString());
+                Log.i(CLASS_NAME, "Dropping User Table from: " + uDAO.database.toString());
                 uDAO.dropTable(AppUserContract.AppUserEntry.TABLE_NAME);
                 returnMe = true;
                 break;
             case R.id.action_logout :
-                System.out.println("You are now subscribed to catFacts!");
                 buildConfirmDialog(this, getResources().getString(R.string.logoff_dialogue));
                 returnMe = true;
                 break;
@@ -109,6 +115,7 @@ public class HomeScreenActivity extends AppCompatActivity {
                 break;
             default :
                 returnMe = super.onOptionsItemSelected(item);
+                break;
         }
         return returnMe;
     }

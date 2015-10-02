@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
-import com.dev.melosz.melodroid.database.DatabaseHelper;
 import com.dev.melosz.melodroid.database.UserDAO;
 import com.dev.melosz.melodroid.drawable.BorderDrawable;
 import com.dev.melosz.melodroid.fragments.RegistrationFragment;
@@ -29,8 +28,14 @@ import com.dev.melosz.melodroid.views.BorderFrameLayout;
 
 /**
  * Created by Marek on 9/28/2015.
+ * Main Launcher activity which also performs all DAO calls for the Login and Registration fragments
+ *
+ *   Date           Name                  Description of Changes
+ * ---------   -------------    --------------------------------------------------------------------
+ * 10 Oct 15   M. Kozina        1. Added header
+ *                              2. Fixed registerNewUser so the logged flag is set and saved
+ *
  */
-
 public class MyActivity extends FragmentActivity {
     private final String CLASS_NAME = MyActivity.class.getSimpleName();
     // Activity and Pager declarations
@@ -289,7 +294,7 @@ public class MyActivity extends FragmentActivity {
             Log.i(CLASS_NAME,
                     "Updating user [" + user.getUserName() + "] log status to logged in.");
             AppUser newUser = uDAO.getUserByName(user.getUserName());
-            user.setLogged(true);
+            newUser.setLogged(true);
             uDAO.updateUser(newUser);
         }
         return success;
