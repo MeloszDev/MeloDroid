@@ -35,6 +35,7 @@ public class FragmentUtil {
     // Colors used in the tab indicator
     final int GREY = Color.parseColor("#C4C4C4");
     final int BLACK = Color.BLACK;
+    final int APP_COLOR = Color.parseColor("#36454b");
 
     /**
      * This method will enable/disable a button when certain conditions are met
@@ -161,11 +162,11 @@ public class FragmentUtil {
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
-    public void setBorderBackground(BorderFrameLayout layout, BorderDrawable bd, int dp) {
+    public void setBorderBottom(BorderFrameLayout layout, BorderDrawable bd, int dp) {
         // get the device's SDK
         int sdk = Build.VERSION.SDK_INT;
         // set the border colors for selected appearance
-//        bd.setAllBorder(dp, BLACK); TODO
+        bd.setBottomBorder(dp, APP_COLOR);
 
         // handle deprecated methods based on the sdk
         if(sdk < Build.VERSION_CODES.JELLY_BEAN){

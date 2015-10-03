@@ -111,6 +111,15 @@ public class UserManagementActivity extends AppCompatActivity {
     }
 
     /**
+     * Method to access the UserDAO to obtain an AppUser by the UserName
+     * @param userName String the AppUser UserName
+     * @return the AppUser
+     */
+    public AppUser getAppUser(String userName){
+        return uDAO.getUserByName(userName);
+    }
+
+    /**
      * Adds the rows to the container view and displays the UserName in the row. Clicking X in the
      * row will delete a user and clicking the pencil icon will (in the future) bring up the
      * EditUserFragment to edit the user's profile.
@@ -126,7 +135,7 @@ public class UserManagementActivity extends AppCompatActivity {
 
         // Set the text in the new row to the user.
         ((TextView) newView.findViewById(android.R.id.text1)).setText(user.getUserName());
-
+        // TODO: inflate EditUserFragment
         // Will display the EditUserFragment
         newView.findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener(){
             @Override
