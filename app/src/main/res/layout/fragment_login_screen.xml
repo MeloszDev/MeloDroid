@@ -32,16 +32,23 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center_horizontal"/>
 
+            <TextView
+                android:id="@+id/helper_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:layout_marginTop="-7dp"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/username_field"
                 android:hint="Username"
                 android:maxLength="16"
-                android:textColorHint="#36454b"
-                android:background="@drawable/rounded_corners"
-                android:gravity="center"
-                android:layout_marginTop="10dp"
+                android:textColorHint="#898989"
+                android:background="@drawable/bottom_border_selector"
+                android:gravity="center_vertical|left"
+                android:paddingLeft="8dp"
                 android:textColor="#36454b"
                 android:inputType="textPersonName"
                 android:elevation="2dp"/>
@@ -51,10 +58,11 @@
                 android:id="@+id/password_field"
                 android:inputType="textPassword"
                 android:hint="Password"
+                android:paddingLeft="8dp"
                 android:maxLength="24"
-                android:textColorHint="#36454b"
-                android:background="@drawable/rounded_corners"
-                android:gravity="center"
+                android:textColorHint="#898989"
+                android:background="@drawable/bottom_border_selector"
+                android:gravity="center_vertical|left"
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b"
                 android:elevation="2dp"/>

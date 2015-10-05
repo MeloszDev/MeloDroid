@@ -188,7 +188,9 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         editor.putString(getString(R.string.preference_stored_user),
                                          user.getUserName());
                         editor.commit();
-
+                        Toast.makeText(CTX,
+                                       "Welcome " + user.getUserName() + "!",
+                                       Toast.LENGTH_SHORT).show();
                         ((MyActivity) getActivity())
                                 .openHomeScreenActivity(HomeScreenActivity.class);
                     }
@@ -458,7 +460,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                 et.setText("");
         }
         else
-            et.setBackgroundResource(R.drawable.rounded_corners);
+            et.setBackgroundResource(R.drawable.bottom_border_selector);
     }
 
     /**

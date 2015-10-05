@@ -1,6 +1,9 @@
 package com.dev.melosz.melodroid.activities;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,12 +17,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.UserDAO;
+import com.dev.melosz.melodroid.fragments.EditUserFragment;
 
 import java.util.List;
 
@@ -140,6 +146,19 @@ public class UserManagementActivity extends AppCompatActivity {
         newView.findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                // TODO: All wrong...
+//                EditUserFragment frag = new EditUserFragment();
+//                FragmentManager fragMan = getSupportFragmentManager();
+//                FragmentTransaction fragTran = fragMan.beginTransaction();
+//                ScrollView mScrollView = (ScrollView) newView.findViewById(R.id.edit_user_fragment);
+//                ScrollView.LayoutParams params = new ScrollView.LayoutParams
+//                        (ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
+//                mScrollView.setLayoutParams(params);
+//                newView.addView(mScrollView);
+//                fragTran.replace(R.id.edit_user_container, frag, null);
+//                fragTran.commit();
+//                mContainerView.addView(newView, 0);
+
                 //TODO: Create EditUserFragment
                 int duration = Toast.LENGTH_SHORT;
                 Toast.makeText(CTX, "Not implemented yet!", duration).show();

@@ -1,9 +1,40 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_user_fragment"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.dev.melosz.melodroid.fragments.EditUserFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent" />
-
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/username_field"
+            android:hint="Username"
+            android:maxLength="16"
+            android:textColorHint="#868686"
+            android:background="@drawable/bottom_border_selector"
+            android:gravity="center_horizontal|left"
+            android:paddingLeft="8dp"
+            android:layout_marginTop="10dp"
+            android:textColor="#36454b"
+            android:inputType="textPersonName"/>
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:id="@+id/password_field"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:maxLength="24"
+            android:textColorHint="#868686"
+            android:background="@drawable/bottom_border_selector"
+            android:gravity="center_horizontal|left"
+            android:paddingLeft="8dp"
+            android:layout_marginTop="10dp"
+            android:textColor="#36454b"
+            android:layout_marginBottom="5dp"/>
+    </LinearLayout>
+</ScrollView>
