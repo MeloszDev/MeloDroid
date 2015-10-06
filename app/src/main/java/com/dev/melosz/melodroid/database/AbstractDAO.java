@@ -17,11 +17,6 @@ import java.util.List;
  * methods which are not defined by an entity DAO class.  This class should be extended for any
  * further implementations of {ENTITY}DAO classes.
  *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *                              2. Fixed getAll method and refactor to return list instead of HashMap
- *
  */
 public abstract class AbstractDAO {
     // Class Name

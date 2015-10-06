@@ -2,19 +2,22 @@ package com.dev.melosz.melodroid.activities;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
@@ -29,14 +32,10 @@ import java.util.Random;
  * different card count (4x4, 8x6, 12x4, etc.), and new graphic icons in which are selected randomly
  * depending on the card count.
  *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *
  */
-public class MemoryGameActivity extends AppCompatActivity implements
+public class MemoryGameActivity extends Activity implements
         ViewTreeObserver.OnGlobalLayoutListener,
-        CardLayout.OnCardTouchListener {
+        CardLayout.OnCardTouchListener, PopupMenu.OnMenuItemClickListener{
     // Helper handler for UI interaction delays
     private Handler handler = new Handler();
 
@@ -61,8 +60,10 @@ public class MemoryGameActivity extends AppCompatActivity implements
 
     // This int ensures only 2 cards MAX are selected at a time
     private int accumulator;
-
     private int score;
+
+    // The options icon
+    private ImageView optionsIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,15 @@ public class MemoryGameActivity extends AppCompatActivity implements
         numCards = numColumns * numRows;
         accumulator = 0;
         score = 0;
+
+        optionsIV = (ImageView) findViewById(R.id.options_button);
+        optionsIV.setOnClickListener(
+                new ImageView.OnClickListener(){
+                    public void onClick(View v) {
+                        popupMenu(v);
+                    }
+                }
+        );
     }
 
     @Override
@@ -87,8 +97,20 @@ public class MemoryGameActivity extends AppCompatActivity implements
         return true;
     }
 
+    /**
+     * Custom menu to override the ActionBar menu
+     * @param v View the optionsIV ImageView
+     */
+    public void popupMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        popup.setOnMenuItemClickListener(this);
+        inflater.inflate(R.menu.menu_memory_game, popup.getMenu());
+        popup.show();
+    }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMenuItemClick(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

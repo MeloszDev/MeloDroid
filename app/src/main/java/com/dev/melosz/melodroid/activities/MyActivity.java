@@ -29,12 +29,6 @@ import com.dev.melosz.melodroid.views.BorderFrameLayout;
 /**
  * Created by Marek on 9/28/2015.
  * Main Launcher activity which also performs all DAO calls for the Login and Registration fragments
- *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *                              2. Fixed registerNewUser so the logged flag is set and saved
- *
  */
 public class MyActivity extends FragmentActivity {
     private final String CLASS_NAME = MyActivity.class.getSimpleName();

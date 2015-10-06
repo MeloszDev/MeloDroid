@@ -9,10 +9,6 @@ import android.widget.EditText;
  * Created by marek.kozina on 9/22/2015.
  * EditText sublcass which has the capability of listening for back button while focused on an
  * EditText and the softinput keyboard is open.
- *     Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *
  */
 public class IMEListenerEditText extends EditText {
     private KeyImeChange keyImeChangeListener;

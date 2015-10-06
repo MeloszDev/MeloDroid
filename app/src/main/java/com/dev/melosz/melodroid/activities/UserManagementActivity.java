@@ -1,31 +1,29 @@
 package com.dev.melosz.melodroid.activities;
 
-import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ScrollView;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.UserDAO;
-import com.dev.melosz.melodroid.fragments.EditUserFragment;
+import com.dev.melosz.melodroid.utils.FragmentUtil;
 
 import java.util.List;
 
@@ -33,17 +31,16 @@ import java.util.List;
  * Created by Marek Kozina 09/30/2015
  * Activity for perfoming User operations such as edit, delete, add, clone, etc.
  *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header & initial functionality
- *
  */
-public class UserManagementActivity extends AppCompatActivity {
+public class UserManagementActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
     // The container view which has layout change animations turned on.
     private ViewGroup mContainerView;
 
     // Handler for delaying the populating of rows to show the animation
     private Handler handler = new Handler();
+
+    // Base utility class
+    FragmentUtil FUTIL = new FragmentUtil();
 
     // DAO database adapter
     private UserDAO uDAO;
@@ -54,18 +51,28 @@ public class UserManagementActivity extends AppCompatActivity {
     // The list of users to display
     List<AppUser> users;
 
+    // The options icon
+    private ImageView optionsIV;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_management);
 
         mContainerView = (ViewGroup) findViewById(R.id.container);
+        optionsIV = (ImageView) findViewById(R.id.options_button);
 
         CTX = this;
 
         // Open or re-open the DAO & database
         uDAO = new UserDAO(CTX);
         uDAO.open();
+
+        // Only need to run this on new install instances
+//        users = FUTIL.makeDummyUserList();
+//        for(AppUser user : users) {
+//            uDAO.saveNewUser(user);
+//        }
 
         // Pull all users from the database and add them to the dynamic scrollview
         users = uDAO.getAllUsers();
@@ -85,6 +92,26 @@ public class UserManagementActivity extends AppCompatActivity {
                 }, delay);
             }
         }
+
+        optionsIV.setOnClickListener(
+                new ImageView.OnClickListener(){
+                    public void onClick(View v) {
+                        popupMenu(v);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Custom menu to override the ActionBar menu
+     * @param v View the optionsIV ImageView
+     */
+    public void popupMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        popup.setOnMenuItemClickListener(this);
+        inflater.inflate(R.menu.menu_user_managment, popup.getMenu());
+        popup.show();
     }
 
     @Override
@@ -95,7 +122,7 @@ public class UserManagementActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // Navigate "up" the demo structure to the HomeScreenActivity.
@@ -146,18 +173,6 @@ public class UserManagementActivity extends AppCompatActivity {
         newView.findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                // TODO: All wrong...
-//                EditUserFragment frag = new EditUserFragment();
-//                FragmentManager fragMan = getSupportFragmentManager();
-//                FragmentTransaction fragTran = fragMan.beginTransaction();
-//                ScrollView mScrollView = (ScrollView) newView.findViewById(R.id.edit_user_fragment);
-//                ScrollView.LayoutParams params = new ScrollView.LayoutParams
-//                        (ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
-//                mScrollView.setLayoutParams(params);
-//                newView.addView(mScrollView);
-//                fragTran.replace(R.id.edit_user_container, frag, null);
-//                fragTran.commit();
-//                mContainerView.addView(newView, 0);
 
                 //TODO: Create EditUserFragment
                 int duration = Toast.LENGTH_SHORT;

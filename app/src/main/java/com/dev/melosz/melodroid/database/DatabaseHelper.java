@@ -10,10 +10,6 @@ import android.util.Log;
  * Created by marek.kozina on 8/25/2015.
  * Singleton DatabaseHelper which is called by DAO classes to process database operations.
  *
- *    Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Declare this DatabaseHelper to insure singleton

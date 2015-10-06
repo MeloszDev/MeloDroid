@@ -1,13 +1,12 @@
 package com.dev.melosz.melodroid.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dev.melosz.melodroid.R;
-import com.dev.melosz.melodroid.activities.UserManagementActivity;
 import com.dev.melosz.melodroid.classes.AppUser;
 
 /**
@@ -46,7 +45,7 @@ public class EditUserFragment extends Fragment {
         if (getArguments() != null) {
             mEditUserName = getArguments().getString(USER);
             if (mEditUserName != null && mEditUserName.length() != 0) {
-                mUser = ((UserManagementActivity) getActivity()).getAppUser(mEditUserName);
+//                mUser = ((UserManagementActivity) getActivity()).getAppUser(mEditUserName);
             }
         }
 

@@ -16,7 +16,6 @@
         <supports-gl-texture android:name="GL_OES_compressed_ETC1_RGB8_texture" />
         <supports-gl-texture android:name="GL_OES_compressed_paletted_texture" />
 
-        <!-- TODO: Remove along with the class itself -->
         <activity
             android:name=".activities.MyActivity"
             android:label="@string/app_name"
@@ -31,7 +30,8 @@
         <activity
             android:name=".activities.HomeScreenActivity"
             android:label="@string/title_activity_home_screen"
-            android:parentActivityName=".activities.MyActivity" >
+            android:parentActivityName=".activities.MyActivity"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dev.melosz.melodroid.activities.MyActivity" />
@@ -42,20 +42,23 @@
             android:parentActivityName=".activities.HomeScreenActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dev.melosz.melodroid.activities.HomeScreenActivity" />
+                android:value="com.dev.melosz.melodroid.activities.HomeScreenActivity"
+                android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen"/>
         </activity>
         <activity
             android:name=".activities.MemoryGameActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_memory_game"
-            android:parentActivityName=".activities.HomeScreenActivity" >
+            android:parentActivityName=".activities.HomeScreenActivity"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dev.melosz.melodroid.activities.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activities.UserManagementActivity"
-            android:label="@string/title_activity_user_management" >
+            android:label="@string/title_activity_user_management"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dev.melosz.melodroid.activities.HomeScreenActivity" />

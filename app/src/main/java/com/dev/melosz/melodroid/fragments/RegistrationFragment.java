@@ -33,10 +33,6 @@ import com.dev.melosz.melodroid.utils.FragmentUtil;
  * Created by Marek Kozina 09/15/2015.
  * Pager-fragment Registration tab with user-info input fields with a changing helper TextView
  *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *                              2. Fixed various validation bugs in the passwords & phone fields
  */
 public class RegistrationFragment extends Fragment implements View.OnFocusChangeListener {
     // Application Context

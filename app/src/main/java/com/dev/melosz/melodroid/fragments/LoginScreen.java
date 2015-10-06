@@ -26,10 +26,6 @@ import com.dev.melosz.melodroid.utils.FragmentUtil;
  * Created by marek.kozina on 9/1/2015.
  * Pager-fragment Login Tab with UserName & Password input fields and a forgot password link.
  *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *
  */
 public class LoginScreen extends Fragment {
     // Application context

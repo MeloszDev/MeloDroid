@@ -16,12 +16,6 @@ import java.util.List;
  * Created by marek.kozina on 8/25/2015.
  * Subclass of the AbstractDAO to handle all AppUser related database operations.
  *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header.
- *                              2. Removed KEY_ID from makeUserCVs since it is a generated id field.
- *                              3. Fixed getAllUsers method infinite loop
- *
  */
 public class UserDAO extends AbstractDAO {
     private final String CLASS_NAME = UserDAO.class.getSimpleName();

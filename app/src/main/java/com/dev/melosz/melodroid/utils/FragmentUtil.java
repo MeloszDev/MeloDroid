@@ -11,21 +11,19 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.dev.melosz.melodroid.R;
+import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.drawable.BorderDrawable;
 import com.dev.melosz.melodroid.views.BorderFrameLayout;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by marek.kozina on 9/8/2015.
  * Helper Utility class for all Activities and Fragments
- *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *                              2. Added registration page password clause to enableButton methods
  *
  */
 public class FragmentUtil {
@@ -244,5 +242,29 @@ public class FragmentUtil {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(obj);
         return json;
+    }
+
+    public List<AppUser> makeDummyUserList (){
+        List<AppUser> users = new ArrayList<>();
+        String[] names = new String[]{
+                "MeloDroidUser",
+                "PatrickKane",
+                "UserNumbaOne",
+                "IRUser",
+                "MeloBoop",
+                "BandMoop",
+                "Sodding",
+                "TheIsland"
+        };
+        for(int i = 0; i < names.length; i++) {
+            AppUser newUser = new AppUser();
+            newUser.setUserName(names[i]);
+            newUser.setPassword("Password");
+            newUser.setEmail("DummyEmail@gmail.com");
+            newUser.setPhoneNumber("6305551234");
+            newUser.setZip("55555");
+            users.add(newUser);
+        }
+        return users;
     }
 }

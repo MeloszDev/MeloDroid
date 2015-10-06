@@ -1,6 +1,6 @@
 <resources>
     <!-- App Name Strings -->
-    <string name="app_name">MeloToolsv2</string>
+    <string name="app_name">MeloDroid</string>
 
     <!-- Titles -->
     <string name="title_activity_open_gles20">OpenGLES20Activity</string>
@@ -23,10 +23,13 @@
     <string name="action_graphics">Graphics</string>
 
     <!-- Activity Strings -->
-    <string name="home_screen_welcome">Welcome to MeloTools! This is a demonstration app created by Marek Kozina, started September, 2015.
+    <string name="home_screen_welcome">Welcome to MeloDroid! This is a demonstration app created by Marek Kozina, started September, 2015.
         \nIt is a continuous work in progress.Email a description of any bugs you find to MeloszKoz@gmail.com.\n
         \nThanks!
         \n-Melosz</string>
+    <string name="melodroid">MeloDroid</string>
+    <string name="memory">Memory Game</string>
+    <string name="user_management">User Management</string>
 
     <!-- User Management Activity -->
     <string name="message_no_users">No users found.</string>

@@ -1,39 +1,130 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.dev.melosz.melodroid.activities.UserManagementActivity">
+    tools:context="com.dev.melosz.melodroid.activities.UserManagementActivity"
+    android:orientation="vertical">
 
-    <!-- A vertical LinearLayout in a ScrollView. This emulates a ListView (and is lighter weight
-             than a ListView when there aren't many rows). -->
-    <ScrollView android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:background="#36454b"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true">
 
-        <!-- Note that this LinearLayout has the "animateLayoutChanges" property set to true.
-             This tells the framework to automatically animate child views (in this case, rows)
-             as they are added to and removed from the LinearLayout. -->
-        <LinearLayout android:id="@+id/container"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-                      android:showDividers="middle"
-                      android:divider="?android:dividerHorizontal"
-                      android:animateLayoutChanges="true"/>
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@mipmap/app_icon"
+                android:layout_marginLeft="10dp" />
 
-    </ScrollView>
+            <!-- This LinearLayout wraps the TextView so the borders can be highlighted.  -->
+            <LinearLayout
+                android:id="@+id/tab_layout_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_gravity="center_horizontal|bottom">
 
-    <!-- The "empty" view to show when there are no items in the "list" view defined above. -->
-    <TextView android:id="@android:id/empty"
-              style="?android:textAppearanceSmall"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:padding="32dp"
-              android:text="@string/message_no_users"
-              android:textColor="?android:textColorSecondary" />
+                <com.dev.melosz.melodroid.views.BorderFrameLayout
+                    android:id="@+id/title_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom">
+                    <TextView
+                        android:id="@+id/title_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_management"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginBottom="5dp"/>
+                </com.dev.melosz.melodroid.views.BorderFrameLayout>
+            </LinearLayout>
 
-</FrameLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_marginRight="10dp"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/options_button"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@mipmap/list6"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_marginRight="5dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#283337"
+            android:layout_gravity="bottom" />
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_gravity="bottom" />
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#949494"
+            android:layout_gravity="bottom" />
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#dddddd"
+            android:layout_gravity="bottom" />
+    </LinearLayout>
+
+
+
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="com.dev.melosz.melodroid.activities.UserManagementActivity">
+
+        <!-- A vertical LinearLayout in a ScrollView. This emulates a ListView (and is lighter weight
+                 than a ListView when there aren't many rows). -->
+        <ScrollView android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+            <!-- Note that this LinearLayout has the "animateLayoutChanges" property set to true.
+                 This tells the framework to automatically animate child views (in this case, rows)
+                 as they are added to and removed from the LinearLayout. -->
+            <LinearLayout android:id="@+id/container"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:orientation="vertical"
+                          android:showDividers="middle"
+                          android:divider="?android:dividerHorizontal"
+                          android:animateLayoutChanges="true"/>
+
+        </ScrollView>
+
+        <!-- The "empty" view to show when there are no items in the "list" view defined above. -->
+        <TextView android:id="@android:id/empty"
+                  style="?android:textAppearanceSmall"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:padding="32dp"
+                  android:text="@string/message_no_users"
+                  android:textColor="?android:textColorSecondary" />
+
+    </FrameLayout>
+</LinearLayout>

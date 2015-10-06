@@ -9,10 +9,6 @@ import com.dev.melosz.melodroid.classes.AppUser;
  * This contract class defines and specifies the layout of the AppUser DB schema in a systematic and
  * self documenting way.
  *
- *    Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *
  */
 public final class AppUserContract {
     /**

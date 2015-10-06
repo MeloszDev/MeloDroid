@@ -12,7 +12,8 @@ import android.graphics.drawable.Drawable;
 /**
  * Created by marek.kozina on 9/10/2015.
  *
- * Source: https://github.com/vivekkhandelwal/kLib-android/blob/master/src/com/khandelwal/library/drawable/BorderDrawable.java
+ * Original source:
+ * https://github.com/vivekkhandelwal/kLib-android/blob/master/src/com/khandelwal/library/drawable/BorderDrawable.java
  */
 
 public class BorderDrawable extends Drawable {

@@ -1,5 +1,6 @@
 package com.dev.melosz.melodroid.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,10 +8,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
@@ -31,12 +35,23 @@ import com.dev.melosz.melodroid.database.UserDAO;
  *                                 of DAO class
  *
  */
-public class HomeScreenActivity extends AppCompatActivity {
+public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
     private final String CLASS_NAME = HomeScreenActivity.class.getSimpleName();
+
+    // The current logged-in user
     private AppUser mainUser;
+
+    // DAO object for database transactions
     private UserDAO uDAO;
-    private Context CTX;
+
+    // The preferences which store the current user
     private SharedPreferences prefs;
+
+    // This Activity Context
+    private Context CTX;
+
+    // The options icon
+    private ImageView optionsIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +70,15 @@ public class HomeScreenActivity extends AppCompatActivity {
         uDAO.open();
 
         mainUser = uDAO.getUserByName(currentUser);
+
+        optionsIV = (ImageView) findViewById(R.id.options_button);
+        optionsIV.setOnClickListener(
+            new ImageView.OnClickListener(){
+                public void onClick(View v) {
+                    popupMenu(v);
+                }
+            }
+        );
     }
 
     @Override
@@ -64,8 +88,20 @@ public class HomeScreenActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Custom menu to override the ActionBar menu
+     * @param v View the optionsIV ImageView
+     */
+    public void popupMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        popup.setOnMenuItemClickListener(this);
+        inflater.inflate(R.menu.menu_home_screen, popup.getMenu());
+        popup.show();
+    }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMenuItemClick(MenuItem item) {
         boolean returnMe = false;
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -73,7 +109,6 @@ public class HomeScreenActivity extends AppCompatActivity {
         int id = item.getItemId();
         Log.i(CLASS_NAME, "ID for the item is : " + id + " Which is: " + item.getTitle());
 
-        // TODO: DRAMATICALLY CHANGE THE MENU OPTIONS
         switch (id) {
             case R.id.action_get_all_users :
                 Log.i(CLASS_NAME, "Logging all data from: " + uDAO.database.toString());
