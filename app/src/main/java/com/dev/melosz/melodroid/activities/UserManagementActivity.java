@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -193,13 +194,12 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
         // Set the text in the new row to the user.
         ((TextView) newView.findViewById(android.R.id.text1)).setText(user.getUserName());
 
-        final ImageView editButton = (ImageView) newView.findViewById(R.id.edit_button);
+        final ImageButton editButton = (ImageButton) newView.findViewById(R.id.edit_button);
 
         // Will display the EditUserFragment
-        editButton.setOnClickListener(new ImageView.OnClickListener() {
+        editButton.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clearAllBackground(mContainerView);
                 // Set the current row
                 rowUser = currentUser;
                 rowGroup = newView;
@@ -224,6 +224,10 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
         mContainerView.addView(newView, 0);
     }
 
+    /**
+     * Clears all of the indication borders
+     * @param vg ViewGroup the parent ViewGroup to clear
+     */
     public void clearAllBackground(ViewGroup vg){
         for(int i=0; i < vg.getChildCount(); i++){
             View v = vg.getChildAt(i);
@@ -231,8 +235,13 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
         }
     }
 
-    //
+    /**
+     * This method handles the dynamic show/hide of the EditUserFragment
+     */
     public void hideShowFragment () {
+        // Clear previous indicator borders
+        clearAllBackground(mContainerView);
+
         // Build the EditUserFragment
         EditUserFragment fragment = EditUserFragment.newInstance(rowUser.getUserName());
         FragmentManager fragMan = getSupportFragmentManager();

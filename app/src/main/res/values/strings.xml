@@ -24,8 +24,8 @@
 
     <!-- Activity Strings -->
     <string name="home_screen_welcome">Welcome to MeloDroid! This is a demonstration app created by Marek Kozina, started September, 2015.
-        \nIt is a continuous work in progress.Email a description of any bugs you find to MeloszKoz@gmail.com.\n
-        \nThanks!
+        \nIt is a continuous work in progress.\n
+        \nThanks for visiting!
         \n-Melosz</string>
     <string name="melodroid">MeloDroid</string>
     <string name="memory">Memory Game</string>
@@ -61,6 +61,20 @@
     <!-- Misc Strings -->
     <string name="exit_dialogue">Are you sure you want to exit?</string>
     <string name="logoff_dialogue">Are you sure you want to logoff?</string>
+
+    <!-- AppUser input field strings -->
+    <string name="username_field">Username</string>
+    <string name="password_field">Password</string>
+    <string name="password_2_field">Re-enter Password</string>
+    <string name="firstname_field">First Name</string>
+    <string name="lastname_field">Last Name</string>
+    <string name="email_field">Email Address</string>
+    <string name="phone_field">Phone Number</string>
+    <string name="address_field">Address</string>
+    <string name="address2_field">Address Line 2 (Apt, Ste, etc.)</string>
+    <string name="city_field">City</string>
+    <string name="state_field">State</string>
+    <string name="zip_field">5 Digit Zip Code</string>
 
     <!-- Toast Strings -->
     <string name="welcome_login_toast">Successfully Logged in as: </string>

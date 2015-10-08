@@ -20,9 +20,11 @@ public class AppUser implements Serializable {
     private String email;
     private String phoneNumber;
     private String address;
+    private String address2;
     private String city;
     private String state;
     private String zip;
+    private int score;
     private boolean logged;
 
     /**
@@ -235,6 +237,23 @@ public class AppUser implements Serializable {
         this.address = address;
     }
     /**
+     * Gets the address2
+     *
+     * @return
+     */
+    public String getAddress2() {
+        return address2;
+    }
+    /**
+     * Sets the address2
+     *
+     * @param address2
+     */
+    public void setAddress2(String address2) {
+        this.address2 = address2;
+    }
+
+    /**
      * Gets the city
      *
      * @return
@@ -281,6 +300,22 @@ public class AppUser implements Serializable {
      */
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    /**
+     * Gets the Memory Game high score for the user
+     * @return
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
+     * Sets the Memory Game high score for the user
+     * @param score
+     */
+    public void setScore(int score) {
+        this.score = score;
     }
 
     /**

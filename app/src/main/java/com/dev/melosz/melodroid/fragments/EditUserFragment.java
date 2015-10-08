@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.activities.UserManagementActivity;
@@ -16,7 +16,7 @@ import com.dev.melosz.melodroid.classes.AppUser;
  * Created by Marek Kozina 10/2/2015
  * A fragment class to edit or clone users from the UserManagementActivity
  */
-public class EditUserFragment extends Fragment {
+public class EditUserFragment extends Fragment implements View.OnFocusChangeListener{
     private static final String CLASS_NAME = EditUserFragment.class.getSimpleName();
 
     // The initialization parameter user
@@ -29,7 +29,7 @@ public class EditUserFragment extends Fragment {
     private AppUser mUser;
 
     //
-    private ImageView closeFragImg;
+    private ImageButton closeFragImg;
 
     public EditUserFragment () {
 
@@ -70,15 +70,29 @@ public class EditUserFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_edit_user, container, false);
-        closeFragImg = (ImageView) rootView.findViewById(R.id.close_edit_frag);
-        closeFragImg.setOnClickListener(new ImageView.OnClickListener(){
+        closeFragImg = (ImageButton) rootView.findViewById(R.id.close_edit_frag);
+        closeFragImg.setOnClickListener(new ImageButton.OnClickListener(){
             @Override
             public void onClick (View v){
                 ((UserManagementActivity) getActivity()).hideShowFragment();
             }
         });
 
+        rootView.findViewById(R.id.access_edit_fields).setVisibility(View.GONE);
+
         return rootView;
     }
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            switch (v.getId()) {
+                case 0:
+                    break;
+                default :
+                    break;
+            }
+        }
+    }
+
 
 }

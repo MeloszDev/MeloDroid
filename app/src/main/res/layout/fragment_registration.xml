@@ -44,85 +44,85 @@
                 android:layout_height="40dp"
                 android:id="@+id/username_field_reg"
                 android:inputType="textPersonName"
-                android:hint="Username"
+                android:hint="@string/username_field"
                 android:maxLength="16"
-                android:textColorHint="#36454b"
+                android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:paddingLeft="8dp"
-                android:textColor="#36454b"
-                android:elevation="2dp" />
+                android:paddingRight="8dp"
+                android:textColor="#36454b" />
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
                 android:id="@+id/password_field_reg"
                 android:inputType="textPassword"
-                android:hint="Password"
+                android:hint="@string/password_field"
                 android:maxLength="24"
-                android:textColorHint="#36454b"
+                android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b"
-                android:elevation="2dp" />
+                android:textColor="#36454b" />
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
                 android:id="@+id/password_field_reg_reenter"
                 android:inputType="textPassword"
-                android:hint="Re-enter Password"
+                android:hint="@string/password_2_field"
                 android:maxLength="24"
-                android:textColorHint="#36454b"
+                android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b"
-                android:elevation="2dp" />
+                android:textColor="#36454b" />
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
                 android:id="@+id/email_field"
                 android:inputType="textEmailAddress"
-                android:hint="Email Address"
+                android:hint="@string/email_field"
                 android:maxLength="34"
-                android:textColorHint="#36454b"
+                android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b"
-                android:elevation="2dp" />
+                android:textColor="#36454b" />
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
                 android:id="@+id/zip_address_field"
                 android:inputType="number"
-                android:hint="5 Digit Zip Code"
+                android:hint="@string/zip_field"
                 android:maxLength="5"
-                android:textColorHint="#36454b"
+                android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b"
-                android:elevation="2dp" />
+                android:textColor="#36454b" />
+
             <com.dev.melosz.melodroid.classes.IMEListenerEditText
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
-                android:phoneNumber="true"
                 android:id="@+id/phone_number_field"
                 android:inputType="phone"
-                android:hint="Phone Number"
+                android:hint="@string/phone_field"
                 android:maxLength="20"
-                android:textColorHint="#36454b"
+                android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b"
-                android:elevation="2dp">
+                android:textColor="#36454b">
             </com.dev.melosz.melodroid.classes.IMEListenerEditText>
 
             <Button
@@ -143,14 +143,15 @@
                 android:id="@+id/clear_all_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:textColor="@drawable/link_text_color"
                 android:text="@string/clear_fields"
                 android:textStyle="bold"
                 android:clickable="true"
                 android:gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:paddingBottom="10dp"/>
+                android:paddingBottom="10dp"
+                android:background="?android:selectableItemBackground"/>
 
         </LinearLayout>
     </ScrollView>

@@ -165,6 +165,8 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        uDAO = new UserDAO(CTX);
+                        uDAO.open();
                         // Update preferences and the db of the log-out
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString(getString(R.string.preference_stored_user), null);
