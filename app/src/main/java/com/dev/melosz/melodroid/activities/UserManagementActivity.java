@@ -1,12 +1,14 @@
 package com.dev.melosz.melodroid.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.UserDAO;
+import com.dev.melosz.melodroid.fragments.EditUserFragment;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
 
 import java.util.List;
@@ -32,7 +35,7 @@ import java.util.List;
  * Activity for perfoming User operations such as edit, delete, add, clone, etc.
  *
  */
-public class UserManagementActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
+public class UserManagementActivity extends FragmentActivity implements PopupMenu.OnMenuItemClickListener {
     // The container view which has layout change animations turned on.
     private ViewGroup mContainerView;
 
@@ -54,6 +57,17 @@ public class UserManagementActivity extends Activity implements PopupMenu.OnMenu
     // The options icon
     private ImageView optionsIV;
 
+    // Stores the current EditFragment
+    private EditUserFragment mEditFrag;
+
+    // Holder variables to determine which fragments are populated in the respective container
+    private Integer rowClicked;
+    private boolean containerVisible;
+
+    private View fragContainer;
+    private ViewGroup rowGroup;
+    private AppUser rowUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +77,7 @@ public class UserManagementActivity extends Activity implements PopupMenu.OnMenu
         optionsIV = (ImageView) findViewById(R.id.options_button);
 
         CTX = this;
+        containerVisible = true;
 
         // Open or re-open the DAO & database
         uDAO = new UserDAO(CTX);
@@ -81,7 +96,7 @@ public class UserManagementActivity extends Activity implements PopupMenu.OnMenu
         if(users != null) {
             findViewById(android.R.id.empty).setVisibility(View.GONE);
             for(AppUser user : users) {
-                delay += 250;
+                delay += 100;
                 final AppUser currUser = user;
                 // Delay the rebuilding of the cards so the views can update.
                 handler.postDelayed(new Runnable() {
@@ -149,7 +164,12 @@ public class UserManagementActivity extends Activity implements PopupMenu.OnMenu
      * @return the AppUser
      */
     public AppUser getAppUser(String userName){
-        return uDAO.getUserByName(userName);
+        CTX = this;
+        uDAO = new UserDAO(CTX);
+        uDAO.open();
+        AppUser user = uDAO.getUserByName(userName);
+        uDAO.close();
+        return user;
     }
 
     /**
@@ -164,19 +184,27 @@ public class UserManagementActivity extends Activity implements PopupMenu.OnMenu
                 R.layout.user_list_item, mContainerView, false);
 
         // Instantiate the AppUser attached to the listeners of this row
-        final AppUser rowUser = user;
+        final AppUser currentUser = user;
+
+        // Generate new IDs for the fragment containers so they can be targeted separately
+        fragContainer = newView.getChildAt(1);
+        fragContainer.setId(FUTIL.generateViewId());
 
         // Set the text in the new row to the user.
         ((TextView) newView.findViewById(android.R.id.text1)).setText(user.getUserName());
-        // TODO: inflate EditUserFragment
+
+        final ImageView editButton = (ImageView) newView.findViewById(R.id.edit_button);
+
         // Will display the EditUserFragment
-        newView.findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener(){
+        editButton.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //TODO: Create EditUserFragment
-                int duration = Toast.LENGTH_SHORT;
-                Toast.makeText(CTX, "Not implemented yet!", duration).show();
+                clearAllBackground(mContainerView);
+                // Set the current row
+                rowUser = currentUser;
+                rowGroup = newView;
+                fragContainer = newView.getChildAt(1);
+                hideShowFragment();
             }
         });
         // Set a click listener for the "X" button in the row that will remove the row.
@@ -191,10 +219,48 @@ public class UserManagementActivity extends Activity implements PopupMenu.OnMenu
 
             }
         });
-
         // Because mContainerView has android:animateLayoutChanges set to true,
         // adding this view is automatically animated.
         mContainerView.addView(newView, 0);
+    }
+
+    public void clearAllBackground(ViewGroup vg){
+        for(int i=0; i < vg.getChildCount(); i++){
+            View v = vg.getChildAt(i);
+            v.setBackgroundResource(0);
+        }
+    }
+
+    //
+    public void hideShowFragment () {
+        // Build the EditUserFragment
+        EditUserFragment fragment = EditUserFragment.newInstance(rowUser.getUserName());
+        FragmentManager fragMan = getSupportFragmentManager();
+        FragmentTransaction fragTran = fragMan.beginTransaction();
+
+        // Store the current fragment so we can remove it on separate items
+        if (mEditFrag != null) {
+            fragTran.remove(mEditFrag);
+            mEditFrag = fragment;
+        } else {
+            mEditFrag = fragment;
+        }
+
+        // Checks if the container Layout is visible or not and populates or de-populates
+        // the fragment container accordingly
+        if (rowClicked != null && rowClicked == fragContainer.getId() && containerVisible) {
+            // close the fragment container
+            fragTran.commit();
+            containerVisible = false;
+            rowGroup.setBackgroundResource(0);
+        } else {
+            // Add the fragment which is the 2nd child of newView ViewGroup as per the xml
+            fragTran.add(rowGroup.getChildAt(1).getId(), mEditFrag, rowUser.getUserName());
+            fragTran.commit();
+            containerVisible = true;
+            rowGroup.setBackgroundResource(R.drawable.edit_user_border);
+        }
+        rowClicked = fragContainer.getId();
     }
     /**
      * Builds a confirmation Dialog box with Yes or No as choices

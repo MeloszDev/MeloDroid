@@ -7,7 +7,8 @@
                   android:layout_height="?android:listPreferredItemHeightSmall"
                   android:orientation="horizontal"
                   android:showDividers="middle"
-                  android:divider="?android:dividerVertical"
+                  android:layout_marginLeft="5dp"
+                  android:divider="?android:listDivider"
                   android:dividerPadding="8dp"
                   android:gravity="center">
         <!-- Dummy text view that will display the AppUser username. -->

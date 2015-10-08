@@ -2,11 +2,14 @@ package com.dev.melosz.melodroid.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.dev.melosz.melodroid.R;
+import com.dev.melosz.melodroid.activities.UserManagementActivity;
 import com.dev.melosz.melodroid.classes.AppUser;
 
 /**
@@ -14,6 +17,8 @@ import com.dev.melosz.melodroid.classes.AppUser;
  * A fragment class to edit or clone users from the UserManagementActivity
  */
 public class EditUserFragment extends Fragment {
+    private static final String CLASS_NAME = EditUserFragment.class.getSimpleName();
+
     // The initialization parameter user
     private static final String USER = "user";
 
@@ -23,6 +28,12 @@ public class EditUserFragment extends Fragment {
     // The AppUser used in this fragment
     private AppUser mUser;
 
+    //
+    private ImageView closeFragImg;
+
+    public EditUserFragment () {
+
+    }
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -45,8 +56,11 @@ public class EditUserFragment extends Fragment {
         if (getArguments() != null) {
             mEditUserName = getArguments().getString(USER);
             if (mEditUserName != null && mEditUserName.length() != 0) {
-//                mUser = ((UserManagementActivity) getActivity()).getAppUser(mEditUserName);
+                mUser = ((UserManagementActivity) getActivity()).getAppUser(mEditUserName);
+                Log.i(CLASS_NAME, "OnCreate EditUserFragment successful. Username: ["
+                                  + mEditUserName + "]");
             }
+
         }
 
     }
@@ -55,7 +69,16 @@ public class EditUserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_user, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_edit_user, container, false);
+        closeFragImg = (ImageView) rootView.findViewById(R.id.close_edit_frag);
+        closeFragImg.setOnClickListener(new ImageView.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                ((UserManagementActivity) getActivity()).hideShowFragment();
+            }
+        });
+
+        return rootView;
     }
 
 }
