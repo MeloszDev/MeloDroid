@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -111,15 +113,6 @@ public class FragmentUtil {
                     act.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-    }
-
-    /**
-     * TODO: Maybe remove...currently unused
-     * @param et EditText the EditText field to check if it's empty
-     * @return boolean whether or not the field is empty
-     */
-    public boolean checkEmpty(EditText et){
-        return et.getText() != null && et.getText().toString().length() != 0;
     }
 
     /**
@@ -240,31 +233,48 @@ public class FragmentUtil {
      */
     public String prettyPrintObject(Object obj) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String json = gson.toJson(obj);
-        return json;
+        return gson.toJson(obj);
     }
 
+    /**
+     * Helper method to make a somewhat-randomly generated
+     * @return List of randomized AppUsers
+     */
     public List<AppUser> makeDummyUserList (){
         List<AppUser> users = new ArrayList<>();
-        String[] names = new String[]{
-                "MeloDroidUser",
-                "PatrickKane",
-                "UserNumbaOne",
-                "IRUser",
-                "MeloBoop",
-                "BandMoop",
-                "Sodding",
-                "TheIsland"
+        List<String> names = new ArrayList<>();
+        String[] first = new String[]{
+                "Melo", "Droid", "Melosz", "Patrick", "Thomas",
+                "Greg", "Chris", "User", "Morrison",
+                "Kaner", "Boop", "Moop", "Island", "Rando"
         };
-        for(int i = 0; i < names.length; i++) {
+        String[] second = new String[]{
+                "Zoo", "One", "Miiize", "Champ", "Dude", "XxxX",
+                "LMAO", "Bedoop", "Killa", "Hawks", "Town",
+                "Pop1", "WoW", "Doge",
+        };
+        Collections.shuffle(Arrays.asList(first));
+        Collections.shuffle(Arrays.asList(second));
+
+        for(int i = 0; i < first.length; i++) {
+            String newName = first[i] + second[i] + Math.round(Math.random() * 2016);
+            names.add(newName);
+        }
+        for(String name : names) {
             AppUser newUser = new AppUser();
-            newUser.setUserName(names[i]);
+            newUser.setUserName(name);
             newUser.setPassword("Password");
-            newUser.setEmail("DummyEmail@gmail.com");
-            newUser.setPhoneNumber("6305551234");
-            newUser.setZip("55555");
+            newUser.setEmail(name + "@gmail.com");
+            newUser.setPhoneNumber(randNum(9000000000L, 1000000000L));
+            newUser.setZip(randNum(90000L, 10000L));
             users.add(newUser);
         }
         return users;
+    }
+    private String randNum(long dig, long len) {
+        String number;
+        int num = (int) (Math.round(Math.random() * dig) + len);
+        number = Integer.toString(num);
+        return number;
     }
 }

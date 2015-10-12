@@ -1,13 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/registration_screen_fragment"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:fillViewport="true"
-              tools:context="fragments.RegistrationFragment" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/registration_screen_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context="fragments.RegistrationFragment" >
 
     <ScrollView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@android:drawable/screen_background_light"
@@ -15,7 +15,7 @@
         android:focusableInTouchMode="true">
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
@@ -37,7 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:layout_marginTop="-7dp"/>
+                android:layout_marginTop="-7dp"
+                android:textColor="#5486aa"
+                android:alpha=".75"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -53,7 +55,7 @@
                 android:paddingRight="8dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/password_field_reg"
                 android:inputType="textPassword"
@@ -67,7 +69,7 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/password_field_reg_reenter"
                 android:inputType="textPassword"
@@ -81,7 +83,7 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/email_field"
                 android:inputType="textEmailAddress"
@@ -95,7 +97,7 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/zip_address_field"
                 android:inputType="number"
@@ -110,7 +112,7 @@
                 android:textColor="#36454b" />
 
             <com.dev.melosz.melodroid.classes.IMEListenerEditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/phone_number_field"
                 android:inputType="phone"

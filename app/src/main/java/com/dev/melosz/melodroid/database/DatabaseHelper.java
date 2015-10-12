@@ -3,20 +3,28 @@ package com.dev.melosz.melodroid.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.dev.melosz.melodroid.utils.LogUtil;
+
 /**
  * Created by marek.kozina on 8/25/2015.
- * Singleton DatabaseHelper which is called by DAO classes to process database operations.
- *
+ * Singleton DatabaseHelper which is called by DAO classes to execute database operations.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private static final String TAG = DatabaseHelper.class.getSimpleName();
+    private static final boolean DEBUG = true;
+    private static String METHOD;
+
     // Declare this DatabaseHelper to insure singleton
     private static DatabaseHelper dbInstance;
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     // The name of the database file on the file system
     private static final String DATABASE_NAME = "TestApp.db";
@@ -61,6 +69,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
+        METHOD = "onCreate()";
+        log.i(TAG, METHOD, "Creating Database: [" + DATABASE_NAME + "].");
         // Create the db to contain the data for AppUser
         db.execSQL(AppUserContract.SQL_CREATE);
     }
@@ -75,20 +85,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        METHOD = "onUpgrade()";
         // Logs the the process of the DB upgrade
-        Log.i(DatabaseHelper.class.getSimpleName(), "Ugrading from version [" +
-                oldVersion + "] to [" + newVersion + "]");
-        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
-        onCreate(db);
-    }
-
-    // TODO: Attempt to use generics so we don't need to specify type of contract being passed
-    public void addTable(SQLiteDatabase db) {
-        ContentValues cvs = new ContentValues();
-    }
-    private static <T> T putTable(SQLiteDatabase db, Class<T> clazz)
-            throws IllegalAccessException, InstantiationException {
-        T ref = clazz.newInstance();
-        return ref;
+        if(DEBUG) log.i(TAG,
+                METHOD,
+                "Ugrading from version [" + oldVersion + "] to [" + newVersion + "]");
+//        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+        try {
+            db.execSQL(AppUserContract.SQL_UPDATE);
+        } catch (SQLiteException e) {
+            if(DEBUG) log.e(TAG,
+                    METHOD, "Unable to update Database ["
+                    + this.getDatabaseName() + "] Exception: " + e.getLocalizedMessage());
+        }
+//        onCreate(db);
     }
 }

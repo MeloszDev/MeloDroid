@@ -33,10 +33,11 @@ public final class AppUserContract {
         public static final String COL_CITY = "city";
         public static final String COL_STATE = "state";
         public static final String COL_ZIP = "zip";
+        public static final String COL_SCORE = "score";
         public static final String COL_LOGGED = "logged";
     }
     /**
-     * Build the SQL query that creates the table and columns.
+     * Build the SQL String that creates the table and columns.
      */
     public static final String SQL_CREATE = "CREATE TABLE " +
             AppUserEntry.TABLE_NAME + " (" +
@@ -51,5 +52,13 @@ public final class AppUserContract {
             AppUserEntry.COL_CITY + " TEXT," +
             AppUserEntry.COL_STATE + " TEXT," +
             AppUserEntry.COL_ZIP + " TEXT,"+
+            AppUserEntry.COL_SCORE + " INTEGER,"+
             AppUserEntry.COL_LOGGED + " INTEGER );";
+
+    /**
+     * Build the SQL String that updates the table and columns.
+     */
+    public static final String SQL_UPDATE = "ALTER TABLE " +
+            AppUserEntry.TABLE_NAME + " ADD COLUMN " +
+            AppUserEntry.COL_SCORE + " INTEGER ;";
 }

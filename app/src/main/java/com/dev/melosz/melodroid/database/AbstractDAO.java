@@ -5,8 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.dev.melosz.melodroid.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,12 @@ import java.util.List;
  *
  */
 public abstract class AbstractDAO {
-    // Class Name
-    private final String CLASS_NAME = AbstractDAO.class.getSimpleName();
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private static final String TAG = AbstractDAO.class.getSimpleName();
+    private String METHOD;
+    // Set to false to suppress logging
+    private static final boolean DEBUG = false;
 
     // Database fields
     public SQLiteDatabase database;
@@ -61,14 +66,14 @@ public abstract class AbstractDAO {
      * @param tableName String the table we wish to insert in to
      */
     public void put(ContentValues cvs, String tableName) {
-
+        METHOD = "put()";
         try {
             // Insert the entity in given tableName if it exists
             database.insert(tableName, null, cvs);
         }
         catch (SQLiteException e){
             // Table does not exist
-            Log.e("SQL_ERROR:", e.getMessage());
+            if(DEBUG) log.e(TAG, METHOD, e.getMessage());
         }
         getAll(tableName);
     }
@@ -79,6 +84,7 @@ public abstract class AbstractDAO {
      * @return List of column and values
      */
     public List getAll(String tableName) {
+        METHOD = "<getALL>";
         List<String> entries = new ArrayList<>();
 
         Cursor c = database.query(tableName, null, null, null, null, null, null);
@@ -89,16 +95,18 @@ public abstract class AbstractDAO {
             // j represents the column count
             for (int j = 0; j < c.getColumnCount(); j++) {
                 String entry = "Table: [" + tableName +
-                               "] Row #[" + i +
-                               "] Column Name: [" + c.getColumnName(j) +
-                               "] Entry: [" + c.getString(j) + "].";
+                        "] Row #[" + i +
+                        "] Column Name: [" + c.getColumnName(j) +
+                        "] Entry: [" + c.getString(j) + "].";
                 entries.add(entry);
             }
         }
+        if(c != null) c.close();
 
-        // Log each entity
-        for(String entry : entries){
-            Log.i(CLASS_NAME, entry);
+        if(DEBUG) {
+            for (String entry : entries) {
+                log.i(TAG, METHOD, entry);
+            }
         }
 
         return entries;
@@ -108,6 +116,7 @@ public abstract class AbstractDAO {
      * Generic method to check and print out all of the tables that in exist in the app DB
      */
     public void checkTables() {
+        METHOD = "checkTables()";
         List<String> outMessage = new ArrayList<>();
         Cursor c = database.rawQuery("select name FROM sqlite_master WHERE type = 'table'", null);
         if (c.moveToFirst()) {
@@ -119,9 +128,10 @@ public abstract class AbstractDAO {
             }
             c.close();
         }
-
-        for(String msg : outMessage){
-            Log.i(CLASS_NAME, msg);
+        if(DEBUG) {
+            for (String msg : outMessage) {
+                log.i(TAG, METHOD, msg);
+            }
         }
     }
 
@@ -130,6 +140,7 @@ public abstract class AbstractDAO {
      * @param tableName the name of the table to drop
      */
     public void dropTable(String tableName) {
+        METHOD = "dropTable()";
         // Drop the table from the app's database
         try {
             database.execSQL("DROP TABLE IF EXISTS " + tableName);
@@ -139,7 +150,7 @@ public abstract class AbstractDAO {
                     + tableName + "]. Exception: " + e.getMessage(), Toast.LENGTH_SHORT);
             toast.show();
 
-            Log.e("Failed to drop table [" + tableName + "]", e.getMessage());
+            if(DEBUG) log.e(TAG, METHOD, e.getMessage());
         }
 
         Toast toast = Toast.makeText(APP_CTX, "Dropped Table: " + tableName + "!",

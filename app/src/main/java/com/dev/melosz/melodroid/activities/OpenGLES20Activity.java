@@ -11,6 +11,7 @@ import com.dev.melosz.melodroid.views.MyGLSurfaceView;
 
 /**
  * Created by Marek on 9/28/2015.
+ * TODO: This activity is on hold for now.
  */
 
 public class OpenGLES20Activity extends AppCompatActivity {

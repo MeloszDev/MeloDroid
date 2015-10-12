@@ -11,29 +11,30 @@ import android.widget.ImageButton;
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.activities.UserManagementActivity;
 import com.dev.melosz.melodroid.classes.AppUser;
+import com.dev.melosz.melodroid.utils.LogUtil;
 
 /**
  * Created by Marek Kozina 10/2/2015
  * A fragment class to edit or clone users from the UserManagementActivity
  */
 public class EditUserFragment extends Fragment implements View.OnFocusChangeListener{
-    private static final String CLASS_NAME = EditUserFragment.class.getSimpleName();
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private static final String TAG = EditUserFragment.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     // The initialization parameter user
     private static final String USER = "user";
 
-    // The UserName to edit/clone
-    private String mEditUserName;
-
     // The AppUser used in this fragment
     private AppUser mUser;
 
-    //
-    private ImageButton closeFragImg;
+    // The fragments inflated view onCreateView
+    private View mView;
 
-    public EditUserFragment () {
+    // Generic constructor
+    public EditUserFragment () {}
 
-    }
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -54,34 +55,56 @@ public class EditUserFragment extends Fragment implements View.OnFocusChangeList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mEditUserName = getArguments().getString(USER);
+            String mEditUserName = getArguments().getString(USER);
             if (mEditUserName != null && mEditUserName.length() != 0) {
                 mUser = ((UserManagementActivity) getActivity()).getAppUser(mEditUserName);
-                Log.i(CLASS_NAME, "OnCreate EditUserFragment successful. Username: ["
+                if(DEBUG) log.i(TAG, "OnCreate EditUserFragment successful. Username: ["
                                   + mEditUserName + "]");
             }
-
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_edit_user, container, false);
-        closeFragImg = (ImageButton) rootView.findViewById(R.id.close_edit_frag);
-        closeFragImg.setOnClickListener(new ImageButton.OnClickListener(){
+        mView = inflater.inflate(R.layout.fragment_edit_user, container, false);
+
+        // Button to roll up and close the fragment
+        ImageButton closeFragImg = (ImageButton) mView.findViewById(R.id.close_edit_frag);
+        closeFragImg.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
-            public void onClick (View v){
+            public void onClick(View v) {
                 ((UserManagementActivity) getActivity()).hideShowFragment();
             }
         });
 
-        rootView.findViewById(R.id.access_edit_fields).setVisibility(View.GONE);
+        // if the current selected user is the one logged in, hide the password layout
+        if (mUser.isLogged())
+            hideShow(R.id.access_password_field, false);
+        else
+            hideShow(R.id.access_edit_fields, false);
 
-        return rootView;
+        return mView;
     }
+
+    /**
+     * Hides or shows the appropriate layout
+     * @param id int the id of the layout
+     * @param show boolean whether or not to show or hide the view
+     */
+    private void hideShow(int id, boolean show) {
+        if (show)
+            mView.findViewById(id).setVisibility(View.VISIBLE);
+        else
+            mView.findViewById(id).setVisibility(View.GONE);
+    }
+
+    /**
+     * TODO: Validation and helper text
+     * @param v View the view that the focusChange occurs on
+     * @param hasFocus boolean whether or not the view has focus
+     */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {

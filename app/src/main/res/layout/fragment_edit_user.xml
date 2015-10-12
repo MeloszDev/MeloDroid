@@ -64,7 +64,7 @@
                     android:textColor="#36454b"/>
 
                 <TextView
-                    android:id="@+id/clear_all_tv"
+                    android:id="@+id/submit_edit_password"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:textSize="16sp"
@@ -75,8 +75,7 @@
                     android:gravity="center"
                     android:paddingRight="5dp"
                     android:paddingLeft="5dp"
-                    android:background="?android:selectableItemBackground"
-                    android:elevation="2dp"/>
+                    android:background="?android:selectableItemBackground"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -87,7 +86,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/email_field"
                 android:inputType="textEmailAddress"
@@ -101,7 +100,7 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/address_field"
                 android:inputType="number"
@@ -115,7 +114,7 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/address2_field"
                 android:inputType="number"
@@ -129,7 +128,7 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#36454b" />
             <EditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/zip_address_field"
                 android:inputType="number"
@@ -144,7 +143,7 @@
                 android:textColor="#36454b" />
 
             <com.dev.melosz.melodroid.classes.IMEListenerEditText
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:id="@+id/phone_number_field"
                 android:inputType="phone"

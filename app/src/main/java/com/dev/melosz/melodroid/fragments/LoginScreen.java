@@ -21,13 +21,20 @@ import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.activities.HomeScreenActivity;
 import com.dev.melosz.melodroid.activities.MyActivity;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.LogUtil;
+
 
 /**
  * Created by marek.kozina on 9/1/2015.
  * Pager-fragment Login Tab with UserName & Password input fields and a forgot password link.
- *
+
  */
 public class LoginScreen extends Fragment {
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private final static String TAG = LoginScreen.class.getSimpleName();
+    private final static boolean DEBUG = false;
+
     // Application context
     private Context CTX;
 
@@ -36,11 +43,6 @@ public class LoginScreen extends Fragment {
 
     // FragmentUtil helper class
     private FragmentUtil FUTIL = new FragmentUtil();
-
-    // Fragment specific variable declarations
-    private String title;
-    private int page;
-    private String TOAST_MESSAGE = "";
 
     // View declarations
     private EditText unET;
@@ -51,49 +53,27 @@ public class LoginScreen extends Fragment {
     /**
      * Default constructor
      */
-    public LoginScreen() {
-
-    }
-
-    /**
-     * newInstance constructor for creating this fragment with arguments
-     * @param page
-     * @param title
-     * @return
-     */
-    public static LoginScreen newInstance(int page, String title) {
-        LoginScreen loginScreen = new LoginScreen();
-        Bundle args = new Bundle();
-        args.putInt("page", page);
-        args.putString("title", title);
-        loginScreen.setArguments(args);
-        return loginScreen;
-    }
+    public LoginScreen() {}
 
     /**
      * Default overridden onCreate method
-     * @param savedInstanceState
+     * @param savedInstanceState args of the previous state
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        page = getArguments().getInt("page", 0);
-        title = getArguments().getString("title", "");
-
         CTX = getActivity().getApplicationContext();
         //        prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
-                Context.MODE_PRIVATE);
-
+        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
     }
 
     /**
      * Default overridden onCreateView method
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     * @param inflater inflater
+     * @param container container
+     * @param savedInstanceState savedInstanceState
+     * @return view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -104,6 +84,10 @@ public class LoginScreen extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
     /**
      * Initialization method to set all listeners for UI interaction objects.
      * @param view the inflated LoginScreen fragment view
@@ -154,69 +138,39 @@ public class LoginScreen extends Fragment {
         }
 
         // Set the button click Listeners
-        submitButton.setOnClickListener(
-            new Button.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int duration = Toast.LENGTH_SHORT;
-                    String un = unET.getText().toString();
-                    String pw = pwET.getText().toString();
-                    boolean success = false;
-                    try {
-                        success = ((MyActivity) getActivity())
-                                   .checkCredentials(new String[]{un, pw});
-                    }
-                    catch (SQLiteException e) {
-                        Toast.makeText(CTX, "SQLiteException Run Into: " + e.getMessage(),
-                                duration).show();
-                        Log.e("ERROR: ", e.getMessage());
-                    }
-                    if(success) {
-                        // Add user to preferences
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString(getString(R.string.preference_stored_user), un);
-                        editor.commit();
+        submitButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int duration = Toast.LENGTH_SHORT;
+                String un = unET.getText().toString();
+                String pw = pwET.getText().toString();
+                boolean success = false;
+                try {
+                    success = ((MyActivity) getActivity()).checkCredentials(new String[]{un, pw});
+                } catch (SQLiteException e) {
+                    Toast.makeText(CTX, "SQLiteException Run Into: " + e.getMessage(), duration).show();
+                    if(DEBUG) log.e(TAG, e.getMessage());
+                }
+                if (success) {
+                    // Add user to preferences
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString(getString(R.string.preference_stored_user), un);
+                    editor.commit();
 
 
-                        Toast toast = Toast.makeText(CTX, "Welcome back, " + un + "!", duration);
-                        toast.show();
-                        ((MyActivity) getActivity())
-                                .openHomeScreenActivity(HomeScreenActivity.class);
-                    }
-                    else {
-                        Toast toast = Toast.makeText(CTX,
-                                getString(R.string.logon_no_match), duration);
-                        toast.show();
-                        FUTIL.hideKeyboard(getActivity());
-                        unET.clearFocus();
-                        pwET.clearFocus();
-                        unET.setText("");
-                        pwET.setText("");
-                    }
+                    Toast toast = Toast.makeText(CTX, "Welcome back, " + un + "!", duration);
+                    toast.show();
+                    ((MyActivity) getActivity()).openHomeScreenActivity(HomeScreenActivity.class);
+                } else {
+                    Toast toast = Toast.makeText(CTX, getString(R.string.logon_no_match), duration);
+                    toast.show();
+                    FUTIL.hideKeyboard(getActivity());
+                    unET.clearFocus();
+                    pwET.clearFocus();
+                    unET.getText().clear();
+                    pwET.getText().clear();
                 }
             }
-        );
-
-        TOAST_MESSAGE = "Not Implemented Yet!";
-        genericNotImplListener(forgotPwTV, TOAST_MESSAGE, CTX);
-
-    }
-    /**
-     *
-     * @param txtView
-     * @param message
-     * @param context
-     */
-    private void genericNotImplListener(TextView txtView, String message, Context context) {
-        final String msg = message;
-        final Context ctx = context;
-        txtView.setOnClickListener(
-                new TextView.OnClickListener() {
-                    public void onClick(View v) {
-                        int duration = Toast.LENGTH_SHORT;
-                        Toast.makeText(ctx, msg, duration).show();
-                    }
-                }
-        );
+        });
     }
 }

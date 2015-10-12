@@ -4,10 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
 
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +18,17 @@ import java.util.List;
  *
  */
 public class UserDAO extends AbstractDAO {
-    private final String CLASS_NAME = UserDAO.class.getSimpleName();
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private static final String TAG = UserDAO.class.getSimpleName();
+    private String METHOD;
+    // Set to false to suppress logging
+    private static final boolean DEBUG = true;
 
     // AppUser table name from AppUserContract Class
     private final String USER_TABLE_NAME = AppUserContract.AppUserEntry.TABLE_NAME;
 
-    // UserUtil for building/extrapolating AppUser objects to and from Lists and JSON
+    // Helper Utility class
     private FragmentUtil FUTIL = new FragmentUtil();
 
     // Key String constants for AppUser Table
@@ -38,6 +43,7 @@ public class UserDAO extends AbstractDAO {
     private String KEY_CITY = AppUserContract.AppUserEntry.COL_CITY;
     private String KEY_STATE = AppUserContract.AppUserEntry.COL_STATE;
     private String KEY_ZIP = AppUserContract.AppUserEntry.COL_ZIP;
+    private String KEY_SCORE = AppUserContract.AppUserEntry.COL_SCORE;
     private String KEY_LOGGED = AppUserContract.AppUserEntry.COL_LOGGED;
 
     /**
@@ -70,6 +76,7 @@ public class UserDAO extends AbstractDAO {
      * @param user the AppUser to update
      */
     public void updateUser(AppUser user) {
+        METHOD = "updateUser()";
         // make cvs for the DB to read/write
         ContentValues cvs = makeUserCVs(user);
 
@@ -78,11 +85,11 @@ public class UserDAO extends AbstractDAO {
             database.update(USER_TABLE_NAME, cvs, "id=" + user.getId(), null);
         }
         catch (SQLiteException e) {
-            Log.e("ERROR:", e.getMessage());
+            if(DEBUG) log.e(TAG, METHOD, e.getMessage());
         }
         finally {
-            Log.i(CLASS_NAME, "User: " + user.getUserName() + " account updated. Fields below: "
-                    + FUTIL.prettyPrintObject(user));
+            if(DEBUG) log.i(TAG, METHOD, user.getUserName()
+                    + " account updated. Fields below: " + FUTIL.prettyPrintObject(user));
         }
     }
 
@@ -93,12 +100,14 @@ public class UserDAO extends AbstractDAO {
      * @return the retrieved AppUser or null
      */
     public AppUser getUserByName(String name) {
+        METHOD = "getUserByName()";
+
         AppUser setUser = null;
         if(name != null) {
             // Build SQL String
             String sql = "SELECT * FROM " + USER_TABLE_NAME
                     + " WHERE " + KEY_USERNAME + " = '" + name + "';";
-            Log.i(CLASS_NAME, "SQL QUERY: '" + sql + ".");
+            if(DEBUG) log.i(TAG, METHOD, "SQL QUERY: '" + sql + ".");
 
             Cursor c = database.rawQuery(sql, null);
 
@@ -108,12 +117,12 @@ public class UserDAO extends AbstractDAO {
                 // Build existing user by passing the ID
                 setUser = makeUserByCursor(c);
 
-                Log.i(CLASS_NAME, "User [" + setUser.getUserName() + "] Obtained. Fields below:\n."
-                        + FUTIL.prettyPrintObject(setUser));
+                if(DEBUG) log.i(TAG, METHOD, "User [" + setUser.getUserName() +
+                        "] Obtained. Fields below:\n." + FUTIL.prettyPrintObject(setUser));
 
                 c.close();
             }
-            else Log.i(CLASS_NAME, "User [" + name + "] Not found.");
+            else if(DEBUG) log.i(TAG,  METHOD, "User [" + name + "] Not found.");
         }
         return setUser;
     }
@@ -124,6 +133,7 @@ public class UserDAO extends AbstractDAO {
      * @return boolean if the username and password were a match for an entry in the database
      */
     public boolean checkCredentials(String[] data) {
+        METHOD = "checkCredentials()";
         boolean exists = false;
         String sql = "SELECT * FROM " + USER_TABLE_NAME + " WHERE " + KEY_USERNAME +
                 "=? AND " + KEY_PASSWORD + "=?";
@@ -131,7 +141,8 @@ public class UserDAO extends AbstractDAO {
         Cursor c = database.rawQuery(sql, data);
 
         if (c != null && c.getCount() > 0) {
-            Log.i(CLASS_NAME, "Matched user [" + data[0] + "] with SQL Query: [" + sql + "].");
+            if(DEBUG) log.i(TAG,  METHOD, "Matched user [" + data[0]
+                    + "] with SQL Query: [" + sql + "].");
             exists = true;
             c.close();
         }
@@ -144,8 +155,9 @@ public class UserDAO extends AbstractDAO {
      * @return boolean whether or not the user exists in the DB already
      */
     public boolean doesUserExist(String user) {
+        METHOD = "doesUserExist()";
         boolean exists = (getUserByName(user) != null);
-        if(exists) Log.i(USER_TABLE_NAME, "Found user: [" + user + "].");
+        if(exists && DEBUG) log.i(USER_TABLE_NAME, METHOD, "Found user: [" + user + "].");
         return exists;
     }
 
@@ -155,9 +167,10 @@ public class UserDAO extends AbstractDAO {
      * @return boolean whether or not the delete was successful
      */
     public boolean deleteUser(AppUser user) {
+        METHOD = "deleteUser()";
         try
         {
-            Log.i(CLASS_NAME, "Attempting to delete user: [" + user.getUserName()
+            if(DEBUG) log.i(TAG, METHOD, " Attempting to delete user: [" + user.getUserName()
                     + "] from table [" + USER_TABLE_NAME + "].");
             return database.delete(
                     USER_TABLE_NAME,
@@ -166,7 +179,7 @@ public class UserDAO extends AbstractDAO {
         }
         catch(SQLiteException e)
         {
-            Log.e(CLASS_NAME, e.getLocalizedMessage());
+            if(DEBUG) log.e(TAG, METHOD, e.getLocalizedMessage());
             return false;
         }
     }
@@ -175,6 +188,7 @@ public class UserDAO extends AbstractDAO {
      * @return ArrayList of AppUsers
      */
     public List<AppUser> getAllUsers() {
+        METHOD = "getAllUsers()";
         List<AppUser> users = new ArrayList<>();
         String sql = "select * from " + USER_TABLE_NAME;
         Cursor c = database.rawQuery(sql, null);
@@ -190,8 +204,10 @@ public class UserDAO extends AbstractDAO {
         }
         c.close();
 
-        for(AppUser u : users) {
-            Log.i(USER_TABLE_NAME, "Found user: " + FUTIL.prettyPrintObject(u));
+        if(DEBUG){
+            for(AppUser u : users) {
+                log.i(USER_TABLE_NAME, METHOD, "Found user: " + FUTIL.prettyPrintObject(u));
+            }
         }
 
         return users;
@@ -245,6 +261,7 @@ public class UserDAO extends AbstractDAO {
                 c.getString(c.getColumnIndex(KEY_CITY)),
                 c.getString(c.getColumnIndex(KEY_STATE)),
                 c.getString(c.getColumnIndex(KEY_ZIP)),
+                c.getInt(c.getColumnIndex(KEY_SCORE)),
                 c.getInt(c.getColumnIndex(KEY_LOGGED))
         );
     }

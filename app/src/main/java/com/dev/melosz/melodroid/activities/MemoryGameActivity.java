@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +20,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
+import com.dev.melosz.melodroid.utils.LogUtil;
 import com.dev.melosz.melodroid.views.CardLayout;
 
 import java.util.Random;
@@ -36,6 +36,11 @@ import java.util.Random;
 public class MemoryGameActivity extends Activity implements
         ViewTreeObserver.OnGlobalLayoutListener,
         CardLayout.OnCardTouchListener, PopupMenu.OnMenuItemClickListener{
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private static final String TAG = MemoryGameActivity.class.getSimpleName();
+    private static final boolean DEBUG = false;
+
     // Helper handler for UI interaction delays
     private Handler handler = new Handler();
 
@@ -62,9 +67,6 @@ public class MemoryGameActivity extends Activity implements
     private int accumulator;
     private int score;
 
-    // The options icon
-    private ImageView optionsIV;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,14 +82,12 @@ public class MemoryGameActivity extends Activity implements
         accumulator = 0;
         score = 0;
 
-        optionsIV = (ImageView) findViewById(R.id.options_button);
-        optionsIV.setOnClickListener(
-                new ImageView.OnClickListener(){
-                    public void onClick(View v) {
-                        popupMenu(v);
-                    }
-                }
-        );
+        ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
+        optionsIV.setOnClickListener(new ImageView.OnClickListener() {
+            public void onClick(View v) {
+                popupMenu(v);
+            }
+        });
     }
 
     @Override
@@ -175,7 +175,7 @@ public class MemoryGameActivity extends Activity implements
 
         }
         super.onConfigurationChanged(newConfig);
-    };
+    }
 
     /**
      * This method listens for the clicks of the cards from the CardLayout class
@@ -184,30 +184,33 @@ public class MemoryGameActivity extends Activity implements
      */
     @Override
     public void OnCardSelected(CardLayout card, boolean selected) {
-        int tag = (int) card.getBackCard().getTag();
-        String rName = getResources().getResourceName(tag);
-        //get the id string
-        String idString = " \nCard ID: [" + card.getId() + "]\n" +
-                "Card Tag: [" + tag + "]\n" +
-                "BackCard ID: [" + card.getBackCard().getId() + "]\n" +
-                "Selected: [" + card.isSelected() + "]\n" +
-                "Matched: [" + card.isMatched() + "]\n" +
-                "Resource Name : [" + rName + "]";
 
-        Log.i("CARD", idString);
-        if(!card.isSelected() && !card.isMatched() && accumulator != 2) {
-            // initial selection
-            if (currentCard == null || accumulator == 0) {
-                currentCard = card;
-                flipCard(card, false);
+
+            if(DEBUG) {
+                int tag = (int) card.getBackCard().getTag();
+                String rName = getResources().getResourceName(tag);
+                //get the id string
+                String idString = " \nCard ID: [" + card.getId() + "]\n" +
+                        "Card Tag: [" + tag + "]\n" +
+                        "BackCard ID: [" + card.getBackCard().getId() + "]\n" +
+                        "Selected: [" + card.isSelected() + "]\n" +
+                        "Matched: [" + card.isMatched() + "]\n" +
+                        "Resource Name : [" + rName + "]";
+                log.i(TAG, idString);
             }
-            // first time second card is chosen
-            else if (cardToMatch == null || accumulator == 1) {
-                cardToMatch = currentCard;
-                currentCard = card;
-                flipCard(card, true);
+            if(!card.isSelected() && !card.isMatched() && accumulator != 2) {
+                // initial selection
+                if (currentCard == null || accumulator == 0) {
+                    currentCard = card;
+                    flipCard(card, false);
+                }
+                // first time second card is chosen
+                else if (cardToMatch == null || accumulator == 1) {
+                    cardToMatch = currentCard;
+                    currentCard = card;
+                    flipCard(card, true);
+                }
             }
-        }
     }
 
     /**
@@ -296,9 +299,11 @@ public class MemoryGameActivity extends Activity implements
             // Add 50 points for ever match
             score += 50;
 
-            message = "MATCH WITH TAGS: \ncurrentCard: [" + matcher[0] + "] \ncardToMatch: ["
-                    + matcher[1]  + "] \nScore: [" + score + "]";
-            Log.i("MATCH", message);
+            if(DEBUG) {
+                message = "MATCH WITH TAGS: \ncurrentCard: [" + matcher[0] + "] \ncardToMatch: ["
+                        + matcher[1]  + "] \nScore: [" + score + "]";
+                log.i(TAG, message);
+            }
 
             // set the match flag
             currentCard.setMatched(true);
@@ -315,9 +320,11 @@ public class MemoryGameActivity extends Activity implements
             // Deduct 10 points from the score on every non-match
             score -= 10;
 
-            message = "NO MATCH WITH TAGS \ncurrentCard: [" + matcher[0] + "] \ncardToMatch: ["
-                    + matcher[1] + "] \nScore: [" + score + "]";
-            Log.i("NO MATCH", message);
+            if(DEBUG) {
+                message = "NO MATCH WITH TAGS \ncurrentCard: [" + matcher[0] + "] \ncardToMatch: ["
+                        + matcher[1] + "] \nScore: [" + score + "]";
+                log.i(TAG, message);
+            }
 
             // flip both cards back to their original state
             flipCardBack(currentCard, cardToMatch);

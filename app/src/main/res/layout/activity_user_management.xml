@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="#36454b"
             android:orientation="horizontal"
@@ -27,7 +27,7 @@
             <LinearLayout
                 android:id="@+id/tab_layout_wrapper"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
                 android:layout_gravity="center_horizontal|bottom">
 
@@ -50,7 +50,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginRight="10dp"
                 android:gravity="right"
@@ -67,22 +67,22 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#283337"
             android:layout_gravity="bottom" />
         <ImageView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"
             android:layout_gravity="bottom" />
         <ImageView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#949494"
             android:layout_gravity="bottom" />
         <ImageView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#dddddd"
             android:layout_gravity="bottom" />

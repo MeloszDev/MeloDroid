@@ -2,6 +2,7 @@ package com.dev.melosz.melodroid.views;
 
 import android.R.drawable;
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -20,7 +21,9 @@ import com.dev.melosz.melodroid.utils.FragmentUtil;
  *
  */
 public class CardLayout extends RelativeLayout {
-    private static final String CLASS = CardLayout.class.getSimpleName();
+    // Debugging controls
+    private static final String TAG = CardLayout.class.getSimpleName();
+    private static final boolean DEBUG = false;
     private FragmentUtil FUTIL = new FragmentUtil();
 
     // These will store the images and matching params to check in the memory game
@@ -122,7 +125,7 @@ public class CardLayout extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
-        //        Log.i(CLASS, "Card id: [" + this.getId() + "] Selected.");
+        if(DEBUG) Log.i(TAG, "Card id: [" + this.getId() + "] Selected.");
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:

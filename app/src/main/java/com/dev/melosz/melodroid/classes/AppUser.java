@@ -32,7 +32,7 @@ public class AppUser implements Serializable {
      */
     public AppUser() {}
     /**
-     * @param userName
+     * @param userName String
      */
     public AppUser(String userName) {
         this.userName = userName;
@@ -41,20 +41,22 @@ public class AppUser implements Serializable {
     /**
      * Constructor with all fields except ID.  Used when making a new entry
      *
-     * @param userName
-     * @param password
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param phoneNumber
-     * @param address
-     * @param city
-     * @param state
-     * @param zip
+     * @param userName String
+     * @param password String
+     * @param firstName String
+     * @param lastName String
+     * @param email String
+     * @param phoneNumber String
+     * @param address String
+     * @param city String
+     * @param state String
+     * @param zip String
+     * @param score int
+     * @param logged int saved as bool
      */
     public AppUser(String userName, String password, String firstName, String lastName, String email,
                    String phoneNumber, String address, String city, String state, String zip,
-                   int logged) {
+                   int score, int logged) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
@@ -65,26 +67,29 @@ public class AppUser implements Serializable {
         this.city = city;
         this.state = state;
         this.zip = zip;
+        this.score = score;
         this.logged = (logged != 0);
     }
     /**
      * Constructor with all fields with ID. Used for existing entries
      *
-     * @param id
-     * @param userName
-     * @param password
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param phoneNumber
-     * @param address
-     * @param city
-     * @param state
-     * @param zip
+     * @param id int (Unique)
+     * @param userName String
+     * @param password String
+     * @param firstName String
+     * @param lastName String
+     * @param email String
+     * @param phoneNumber String
+     * @param address String
+     * @param city String
+     * @param state String
+     * @param zip String
+     * @param score int
+     * @param logged int saved as bool
      */
     public AppUser(int id, String userName, String password, String firstName, String lastName,
                    String email, String phoneNumber, String address, String city, String state,
-                   String zip, int logged) {
+                   String zip, int score, int logged) {
         this.id = id;
         this.userName = userName;
         this.password = password;
@@ -96,6 +101,7 @@ public class AppUser implements Serializable {
         this.city = city;
         this.state = state;
         this.zip = zip;
+        this.score = score;
         this.logged = (logged != 0);
     }
 
@@ -111,7 +117,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the id
      *
-     * @param id
+     * @param id int
      */
     public void setId(int id) {
 
@@ -120,7 +126,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the userName
      *
-     * @return
+     * @return String
      */
     public String getUserName() {
 
@@ -129,7 +135,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the userName
      *
-     * @param userName
+     * @param userName String
      */
     public void setUserName(String userName) {
 
@@ -138,7 +144,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the password
      *
-     * @return
+     * @return String
      */
     public String getPassword() {
 
@@ -147,7 +153,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the password
      *
-     * @param password
+     * @param password String
      */
     public void setPassword(String password) {
 
@@ -155,7 +161,7 @@ public class AppUser implements Serializable {
     }
     /**
      * Gets the firstName
-     * @return
+     * @return String
      */
     public String getFirstName() {
 
@@ -164,7 +170,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the firstName
      *
-     * @param firstName
+     * @param firstName String
      */
     public void setFirstName(String firstName) {
 
@@ -173,7 +179,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the lastName
      *
-     * @return
+     * @return String
      */
     public String getLastName() {
 
@@ -182,7 +188,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the lastName
      *
-     * @param lastName
+     * @param lastName String
      */
     public void setLastName(String lastName) {
 
@@ -191,7 +197,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the email
      *
-     * @return
+     * @return String
      */
     public String getEmail() {
         return email;
@@ -199,7 +205,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the email
      *
-     * @param email
+     * @param email String
      */
     public void setEmail(String email) {
         this.email = email;
@@ -207,7 +213,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the phoneNumber
      *
-     * @return
+     * @return String
      */
     public String getPhoneNumber() {
         return phoneNumber;
@@ -215,7 +221,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the phoneNumber
      *
-     * @param phoneNumber
+     * @param phoneNumber String
      */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -223,7 +229,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the address
      *
-     * @return
+     * @return String
      */
     public String getAddress() {
         return address;
@@ -231,7 +237,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the address
      *
-     * @param address
+     * @param address String
      */
     public void setAddress(String address) {
         this.address = address;
@@ -239,7 +245,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the address2
      *
-     * @return
+     * @return String
      */
     public String getAddress2() {
         return address2;
@@ -247,7 +253,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the address2
      *
-     * @param address2
+     * @param address2 String
      */
     public void setAddress2(String address2) {
         this.address2 = address2;
@@ -256,7 +262,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the city
      *
-     * @return
+     * @return String
      */
     public String getCity() {
         return city;
@@ -264,7 +270,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the city
      *
-     * @param city
+     * @param city String
      */
     public void setCity(String city) {
         this.city = city;
@@ -272,7 +278,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the state
      *
-     * @return
+     * @return String
      */
     public String getState() {
         return state;
@@ -280,7 +286,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the state
      *
-     * @param state
+     * @param state String
      */
     public void setState(String state) {
         this.state = state;
@@ -288,7 +294,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the zip
      *
-     * @return
+     * @return String
      */
     public String getZip() {
         return zip;
@@ -296,7 +302,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the zip
      *
-     * @param zip
+     * @param zip String
      */
     public void setZip(String zip) {
         this.zip = zip;
@@ -304,7 +310,7 @@ public class AppUser implements Serializable {
 
     /**
      * Gets the Memory Game high score for the user
-     * @return
+     * @return int
      */
     public int getScore() {
         return score;
@@ -312,7 +318,7 @@ public class AppUser implements Serializable {
 
     /**
      * Sets the Memory Game high score for the user
-     * @param score
+     * @param score int
      */
     public void setScore(int score) {
         this.score = score;
@@ -321,7 +327,7 @@ public class AppUser implements Serializable {
     /**
      * Gets the user's logged state
      *
-     * @return
+     * @return boolean
      */
     public boolean isLogged() {
         return logged;
@@ -330,7 +336,7 @@ public class AppUser implements Serializable {
     /**
      * Sets the flag for the user to be logged in or not
      *
-     * @param logged
+     * @param logged boolean
      */
     public void setLogged(boolean logged) {
         this.logged = logged;

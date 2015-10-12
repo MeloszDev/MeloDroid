@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,15 +27,23 @@ import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.UserDAO;
 import com.dev.melosz.melodroid.fragments.EditUserFragment;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.LogUtil;
 
 import java.util.List;
 
 /**
  * Created by Marek Kozina 09/30/2015
- * Activity for perfoming User operations such as edit, delete, add, clone, etc.
+ * Activity for performing User operations such as edit, delete, add, clone, etc.
  *
  */
-public class UserManagementActivity extends FragmentActivity implements PopupMenu.OnMenuItemClickListener {
+public class UserManagementActivity extends FragmentActivity
+        implements PopupMenu.OnMenuItemClickListener {
+
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private final static String TAG = UserManagementActivity.class.getSimpleName();
+    private final static boolean DEBUG = false;
+
     // The container view which has layout change animations turned on.
     private ViewGroup mContainerView;
 
@@ -55,9 +62,6 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
     // The list of users to display
     List<AppUser> users;
 
-    // The options icon
-    private ImageView optionsIV;
-
     // Stores the current EditFragment
     private EditUserFragment mEditFrag;
 
@@ -75,7 +79,7 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
         setContentView(R.layout.activity_user_management);
 
         mContainerView = (ViewGroup) findViewById(R.id.container);
-        optionsIV = (ImageView) findViewById(R.id.options_button);
+        ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
 
         CTX = this;
         containerVisible = true;
@@ -84,11 +88,15 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
         uDAO = new UserDAO(CTX);
         uDAO.open();
 
-        // Only need to run this on new install instances
-//        users = FUTIL.makeDummyUserList();
-//        for(AppUser user : users) {
-//            uDAO.saveNewUser(user);
-//        }
+        if(DEBUG) {
+            log.i(TAG, "Creating Dummy User List");
+            // Only need to run this on new install instances
+            users = FUTIL.makeDummyUserList();
+            for(AppUser user : users) {
+                uDAO.saveNewUser(user);
+                FUTIL.prettyPrintObject(user);
+            }
+        }
 
         // Pull all users from the database and add them to the dynamic scrollview
         users = uDAO.getAllUsers();
@@ -165,12 +173,7 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
      * @return the AppUser
      */
     public AppUser getAppUser(String userName){
-        CTX = this;
-        uDAO = new UserDAO(CTX);
-        uDAO.open();
-        AppUser user = uDAO.getUserByName(userName);
-        uDAO.close();
-        return user;
+        return uDAO.getUserByName(userName);
     }
 
     /**
@@ -186,7 +189,6 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
 
         // Instantiate the AppUser attached to the listeners of this row
         final AppUser currentUser = user;
-
         // Generate new IDs for the fragment containers so they can be targeted separately
         fragContainer = newView.getChildAt(1);
         fragContainer.setId(FUTIL.generateViewId());
@@ -212,10 +214,10 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
             @Override
             public void onClick(View view) {
                 String message = "Are you sure you want to delete user ["
-                        + rowUser.getUserName() + "]? This process cannot be un-done.";
+                        + currentUser.getUserName() + "]? This process cannot be un-done.";
 
                 // Prompt the user to confirm if they want to delete the user
-                buildConfirmDialog(CTX, message, rowUser, newView);
+                buildConfirmDialog(CTX, message, currentUser, newView);
 
             }
         });
@@ -285,9 +287,13 @@ public class UserManagementActivity extends FragmentActivity implements PopupMen
                 .setCancelable(false)
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if(uDAO.deleteUser(deleteUser))
-                            Log.i("UserDAO", "Successfully deleted user ["
-                                  + deleteUser.getUserName() + "]");
+                        uDAO.open();
+
+                        if(uDAO.deleteUser(deleteUser)) {
+                            Toast.makeText(CTX,
+                                    "Successfully deleted user [" + deleteUser.getUserName()
+                                            + "]", Toast.LENGTH_SHORT).show();
+                        }
 
                         mContainerView.removeView(view);
                         // If there are no rows remaining, show the empty view.

@@ -10,7 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.egl.EGLConfig;
 
 /**
- * Created by marek.kozina on 9/8/2015.
+ * Example from Android Docs. TODO: enhance
  */
 public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Triangle mTriangle;

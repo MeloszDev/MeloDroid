@@ -23,7 +23,8 @@ import com.dev.melosz.melodroid.database.UserDAO;
 import com.dev.melosz.melodroid.drawable.BorderDrawable;
 import com.dev.melosz.melodroid.fragments.RegistrationFragment;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
-import com.dev.melosz.melodroid.utils.ViewPagerAdapter;
+import com.dev.melosz.melodroid.utils.LogUtil;
+import com.dev.melosz.melodroid.utils.LoginViewPagerAdapter;
 import com.dev.melosz.melodroid.views.BorderFrameLayout;
 
 /**
@@ -31,12 +32,14 @@ import com.dev.melosz.melodroid.views.BorderFrameLayout;
  * Main Launcher activity which also performs all DAO calls for the Login and Registration fragments
  */
 public class MyActivity extends FragmentActivity {
-    private final String CLASS_NAME = MyActivity.class.getSimpleName();
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private final static String TAG = MyActivity.class.getSimpleName();
+    private final static boolean DEBUG = true;
+
     // Activity and Pager declarations
     private ViewPager mViewPager;
-    private ViewPagerAdapter viewAdapter;
-    private final CharSequence TITLES[] = {"Login", "Signup"};
-    private final int NUM_TABS = 2;
+    private LoginViewPagerAdapter viewAdapter;
     private int DP;
     private Context CTX;
 
@@ -73,7 +76,7 @@ public class MyActivity extends FragmentActivity {
 
         // See if there is a stored user in the UserPreferences
         String storedUser = prefs.getString(getString(R.string.preference_stored_user), null);
-        Log.i(CLASS_NAME, "Stored user is: [" + storedUser + "].");
+        if(DEBUG) log.i(TAG, "Stored user is: [" + storedUser + "].");
 
         // If storedUser isn't null, check to see if the logged flag is set
         userLoggedIn = storedUser != null && checkUserLogged(storedUser);
@@ -97,14 +100,14 @@ public class MyActivity extends FragmentActivity {
         tvSignup = (TextView) findViewById(R.id.signup_text);
 
         // Get the screen density and convert the dp into a pixel int
-        DP = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
+        DP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
 
         // Instantiate the ViewPager & Adapter
         mViewPager = (ViewPager) findViewById(R.id.fragment_pager);
-        viewAdapter = new ViewPagerAdapter(getSupportFragmentManager(), TITLES, NUM_TABS);
+        viewAdapter = new LoginViewPagerAdapter(getSupportFragmentManager());
+        mViewPager.setPageTransformer(false, new DepthPageTransformer());
         mViewPager.setAdapter(viewAdapter);
-
+        
         // Set the initial tab selected as the login screen
         mViewPager.setCurrentItem(0);
         setTabSelected(0);
@@ -113,7 +116,11 @@ public class MyActivity extends FragmentActivity {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                if(DEBUG) log.i(TAG, "In onPageSelected with Position: [" + position + "]");
+
+                // Hide the keyboard when the page changes
                 FUTIL.hideKeyboard(MyActivity.this);
+
                 // Draw the indicator box around the selected tab
                 setTabSelected(mViewPager.getCurrentItem());
                 RegistrationFragment frag = (RegistrationFragment) getSupportFragmentManager()
@@ -129,6 +136,7 @@ public class MyActivity extends FragmentActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                FUTIL.hideKeyboard(MyActivity.this);
             }
         });
 
@@ -141,7 +149,7 @@ public class MyActivity extends FragmentActivity {
                 }
         );
 
-        // Set up the tabbable clicks
+        // Listeners for the tabs
         tvLogin.setOnClickListener(
                 new TextView.OnClickListener(){
                     public void onClick(View v){
@@ -153,16 +161,15 @@ public class MyActivity extends FragmentActivity {
                 }
         );
         tvSignup.setOnClickListener(
-                new TextView.OnClickListener(){
-                    public void onClick(View v){
-                        if (mViewPager.getCurrentItem() == 0){
-                            mViewPager.setCurrentItem(1);
-                            setTabSelected(1);
-                        }
+            new TextView.OnClickListener(){
+                public void onClick(View v){
+                    if (mViewPager.getCurrentItem() == 0){
+                        mViewPager.setCurrentItem(1);
+                        setTabSelected(1);
                     }
                 }
+            }
         );
-
     }
 
     /**
@@ -246,14 +253,14 @@ public class MyActivity extends FragmentActivity {
         if(user != null) {
             AppUser mUser = null;
             try {
-                Log.i(CLASS_NAME, "Check if user [" + user + "] is logged in.");
+                if(DEBUG) log.i(TAG, "Check if user [" + user + "] is logged in.");
                 mUser = uDAO.getUserByName(user);
             }
             catch (Exception e) {
-                Log.e(CLASS_NAME, e.getLocalizedMessage());
+                if(DEBUG) log.e(TAG, e.getLocalizedMessage());
             }
             if (mUser != null && mUser.isLogged()) {
-                Log.i(CLASS_NAME, "User [" + user + "] is already logged in.");
+                if(DEBUG) log.i(TAG, "User [" + user + "] is already logged in.");
                 check = true;
             }
         }
@@ -281,12 +288,14 @@ public class MyActivity extends FragmentActivity {
             success = true;
         }
         catch (SQLiteException e){
-            Log.e(CLASS_NAME, e.getLocalizedMessage());
+            if(DEBUG) log.e(TAG, e.getLocalizedMessage());
             success = false;
         }
         if(success) {
-            Log.i(CLASS_NAME,
-                    "Updating user [" + user.getUserName() + "] log status to logged in.");
+            if(DEBUG) {
+                log.i(TAG,
+                        "Updating user [" + user.getUserName() + "] log status to logged in.");
+            }
             AppUser newUser = uDAO.getUserByName(user.getUserName());
             newUser.setLogged(true);
             uDAO.updateUser(newUser);
@@ -311,19 +320,13 @@ public class MyActivity extends FragmentActivity {
     }
 
     /**
-     * This method allows us to go "back" to the login screen from the registration screen, or close
-     * the app all together if no screen is in the BackStack.
+     * This method will close the app with the Back button from the main activity.
      */
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-            getSupportFragmentManager().beginTransaction().commit();
-        }
-        else {
-            super.onBackPressed();
-            finish();
-        }
+        super.onBackPressed();
+        uDAO.close();
+        finish();
     }
     /**
      * Builds a confirmation Dialog box with Yes or No as choices
@@ -349,5 +352,56 @@ public class MyActivity extends FragmentActivity {
                 });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public class DepthPageTransformer implements ViewPager.PageTransformer {
+
+        /**
+         * Transforms the login/registration fragments so they slide in or out as if they were
+         * stacked on top of each other to begin with, with a gradual fade.  The visibility needs
+         * to be explicitly changed from View.VISIBLE to View.GONE (or vice versa) or the UI
+         * elements from the first page will be visible, but the interaction will occur on the page
+         * behind it due to the alpha being set to 0.
+         *
+         * @param view View the fragment (page) to transform to/from
+         * @param position float the position of the page relative to the viewport
+         */
+        public void transformPage(View view, float position) {
+            int pageWidth = view.getWidth();
+
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                view.setAlpha(0);
+                view.setVisibility(View.GONE);
+
+            } else if (position <= 0) { // [-1,0]
+                // Use the default slide transition when moving to the left page
+                view.setAlpha(1);
+                view.setTranslationX(0);
+
+                if (view.getVisibility()!=View.VISIBLE)
+                    view.setVisibility(View.VISIBLE);
+
+            } else if (position <= 1) { // (0,1]
+                // Fade the page out.
+                view.setAlpha(1 - position);
+
+                // Counteract the default slide transition
+                view.setTranslationX(pageWidth * -position);
+
+                //
+                if (position==1) {
+                    view.setVisibility(View.GONE);
+                } else {
+                    if (view.getVisibility()!=View.VISIBLE)
+                        view.setVisibility(View.VISIBLE);
+                }
+
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                view.setAlpha(0);
+                view.setVisibility(View.GONE);
+            }
+        }
     }
 }

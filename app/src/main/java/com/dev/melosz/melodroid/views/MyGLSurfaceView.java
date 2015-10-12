@@ -6,7 +6,8 @@ import android.opengl.GLSurfaceView;
 import com.dev.melosz.melodroid.utils.MyGLRenderer;
 
 /**
- * Created by marek.kozina on 9/8/2015.
+ * This is from Android's OpenGL example from developer.android.comS
+ * TODO: Delete or expand.
  */
 public class MyGLSurfaceView extends GLSurfaceView {
     private final MyGLRenderer mRenderer;

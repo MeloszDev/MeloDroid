@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,23 +19,22 @@ import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.AppUserContract;
 import com.dev.melosz.melodroid.database.UserDAO;
+import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.LogUtil;
+
+import java.util.List;
 
 /**
  * Created by Marek Kozina 09/28/2015
  * Main home screen activity where the user lands after logging in or registering successfully.
  * Contains the main menu options and a message to the user for now.  Further functionality will
  * be implemented.
- *
- *   Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header
- *                              2. Removed or replaced println statements with Logs
- *                              3. Removed unecessary database variables and corrected instantiation
- *                                 of DAO class
- *
  */
 public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
-    private final String CLASS_NAME = HomeScreenActivity.class.getSimpleName();
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private static final String TAG = HomeScreenActivity.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     // The current logged-in user
     private AppUser mainUser;
@@ -50,9 +48,6 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
     // This Activity Context
     private Context CTX;
 
-    // The options icon
-    private ImageView optionsIV;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +57,7 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
         prefs = CTX.getSharedPreferences
                 (getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String currentUser = prefs.getString(getString(R.string.preference_stored_user), "Default");
-        Log.i(CLASS_NAME, "Stored user is: "
+        if(DEBUG) log.i(TAG, "Stored user is: "
                 + prefs.getString(getString(R.string.preference_stored_user), "No User Stored"));
 
         // Open or re-open the DAO & database
@@ -71,7 +66,7 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
 
         mainUser = uDAO.getUserByName(currentUser);
 
-        optionsIV = (ImageView) findViewById(R.id.options_button);
+        ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
         optionsIV.setOnClickListener(
             new ImageView.OnClickListener(){
                 public void onClick(View v) {
@@ -107,11 +102,11 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Log.i(CLASS_NAME, "ID for the item is : " + id + " Which is: " + item.getTitle());
+        if(DEBUG) log.i(TAG, "ID for the item is : " + id + " Which is: " + item.getTitle());
 
         switch (id) {
             case R.id.action_get_all_users :
-                Log.i(CLASS_NAME, "Logging all data from: " + uDAO.database.toString());
+                if(DEBUG) log.i(TAG, "Logging all data from: " + uDAO.database.toString());
                 uDAO.getAll(AppUserContract.AppUserEntry.TABLE_NAME);
                 returnMe = true;
                 break;
@@ -125,17 +120,17 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
                 returnMe = true;
                 break;
             case R.id.action_check_tables :
-                Log.i(CLASS_NAME, "Checking tables in: " + uDAO.database.toString());
+                if(DEBUG) log.i(TAG, "Checking tables in: " + uDAO.database.toString());
                 uDAO.checkTables();
                 returnMe = true;
                 break;
             case R.id.action_add_table :
-                Log.i(CLASS_NAME, "Adding User Table to: " + uDAO.database.toString());
+                if(DEBUG) log.i(TAG, "Adding User Table to: " + uDAO.database.toString());
                 uDAO.addAppUserTable();
                 returnMe = true;
                 break;
             case R.id.action_drop_table :
-                Log.i(CLASS_NAME, "Dropping User Table from: " + uDAO.database.toString());
+                if(DEBUG) log.i(TAG, "Dropping User Table from: " + uDAO.database.toString());
                 uDAO.dropTable(AppUserContract.AppUserEntry.TABLE_NAME);
                 returnMe = true;
                 break;
@@ -177,7 +172,7 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
                         try {
                             uDAO.updateUser(mainUser);
                         } catch (SQLiteException e) {
-                            Log.e("ERROR: ", e.getMessage());
+                            if(DEBUG) log.e(TAG, e.getMessage());
                         }
                         // close the DB
                         uDAO.close();

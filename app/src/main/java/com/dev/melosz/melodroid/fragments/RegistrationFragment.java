@@ -28,6 +28,7 @@ import com.dev.melosz.melodroid.activities.MyActivity;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.classes.IMEListenerEditText;
 import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.LogUtil;
 
 /**
  * Created by Marek Kozina 09/15/2015.
@@ -35,6 +36,11 @@ import com.dev.melosz.melodroid.utils.FragmentUtil;
  *
  */
 public class RegistrationFragment extends Fragment implements View.OnFocusChangeListener {
+    // Logging controls
+    private LogUtil log = new LogUtil();
+    private final static String TAG = RegistrationFragment.class.getSimpleName();
+    private final static boolean DEBUG = false;
+
     // Application Context
     private Context CTX;
 
@@ -47,10 +53,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     // Helper utility class
     private FragmentUtil FUTIL = new FragmentUtil();
 
-    private String title;
-    private int page;
-
-    // Views
+    // Fragment interaction views
     private EditText unET;
     private EditText pwET;
     private EditText pw2ET;
@@ -60,7 +63,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     private Button submitButton;
     private TextView helperTV;
 
-    // Globals
+    // Global validation vars
     private boolean VALID = false;
     private EditText[] ET_BUNDLE;
     private View mView;
@@ -71,29 +74,13 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     public RegistrationFragment() {}
 
     /**
-     * newInstance constructor for creating this fragment with arguments
-     * @param page String
-     * @param title String
-     * @return RegistrationFragment
-     */
-    public static RegistrationFragment newInstance(int page, String title) {
-        RegistrationFragment regFrag = new RegistrationFragment();
-        Bundle args = new Bundle();
-        args.putInt("page", page);
-        args.putString("title", title);
-        regFrag.setArguments(args);
-        return regFrag;
-    }
-
-    /**
      *
      * @param savedInstanceState Bundle
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = getArguments().getInt("page", 1);
-        title = getArguments().getString("title", "");
+
         CTX = getActivity().getApplicationContext();
         prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
                                          Context.MODE_PRIVATE);
@@ -225,7 +212,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
             @Override
             public void onClick(View v){
                 for(EditText et : ET_BUNDLE) {
-                    et.setText("");
+                    et.getText().clear();
                 }
                 clearAllFocus();
             }
@@ -398,7 +385,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
             String regex = "\\D";
             number = number.replaceAll(regex, "");
         }
-        Log.i(title + ":" +  page, "Validating phone number: [" + number + "]");
+        if(DEBUG) log.i(TAG, "Validating phone number: [" + number + "]");
 
         String message = "Phone number invalid.  Please re-enter";
         VALID = (PhoneNumberUtils.isGlobalPhoneNumber(number) && number.length() >= 7);
@@ -453,7 +440,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                 setFocusOnET(et);
             }
             else
-                et.setText("");
+                et.getText().clear();
         }
         else
             et.setBackgroundResource(R.drawable.bottom_border_selector);
@@ -466,11 +453,10 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
      */
     private void setFocusOnET(EditText et){
         final EditText currentET = et;
-        System.out.println("IN setFocusOnET ABOUT TO SET FOCUS ON: " + getResources().getResourceName(currentET.getId()));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                currentET.setText("");
+                currentET.getText().clear();
                 currentET.setFocusableInTouchMode(true);
                 currentET.setFocusable(true);
                 currentET.requestFocus();
