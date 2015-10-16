@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="app_main"></color>-->
-    <!--<color name="app_edit_text"></color>-->
-    <!--<color name="app_text_view"></color>-->
-    <!--<color name="app_text_hint"></color>-->
-    <!--<color name="main"></color>-->
-    <!--<color name="main"></color>-->
-    <!--<color name="main"></color>-->
-    <!--<color name="main"></color>-->
+    <!-- main theme colors -->
+    <color name="app_main">#36454b</color>
+    <color name="primary">#36454b</color>
+    <color name="primary_dark">#1C2427</color>
+    <color name="primary_accent">#50666F</color>
+    <color name="black">#000000</color>
+    <color name="overlay_grey">#9a767676</color>
+
+    <!-- Text Colors -->
+    <color name="text_link_pressed">#87535A</color>
+    <color name="edit_text_hint">#898989</color>
+    <color name="button_text_disabled">#a6a6a6</color>
+    <color name="button_text_enabled">#10384a</color>
+    <color name="title_bar_text">#ffffff</color>
+
 </resources>

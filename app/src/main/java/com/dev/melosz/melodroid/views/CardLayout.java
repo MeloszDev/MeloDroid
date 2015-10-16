@@ -2,13 +2,14 @@ package com.dev.melosz.melodroid.views;
 
 import android.R.drawable;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.dev.melosz.melodroid.R;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
 
 /**
  * Created by marek.kozina on 9/28/2015.
@@ -24,7 +25,9 @@ public class CardLayout extends RelativeLayout {
     // Debugging controls
     private static final String TAG = CardLayout.class.getSimpleName();
     private static final boolean DEBUG = false;
-    private FragmentUtil FUTIL = new FragmentUtil();
+
+    // Helper utility class
+    private AppUtil appUtil = new AppUtil();
 
     // These will store the images and matching params to check in the memory game
     private ImageView frontCard;
@@ -36,6 +39,13 @@ public class CardLayout extends RelativeLayout {
     private OnCardTouchListener cardTouchListener;
 
     /**
+     * Generic constructor
+     * @param context Context the Activity Context
+     */
+    public CardLayout (Context context){
+        super(context);
+    }
+    /**
      * Constructor which also builds the WxH of the CardLayout
      * @param context Context the Activity Context
      * @param params LayoutParams the WxH
@@ -44,12 +54,12 @@ public class CardLayout extends RelativeLayout {
         super(context);
 
         setLayoutParams(params);
-        setId(FUTIL.generateViewId());
+        setId(appUtil.generateViewId());
 
         // Build the generic frontCard
         ImageView iv = new ImageView(context);
         iv.setLayoutParams(params);
-        iv.setId(FUTIL.generateViewId());
+        iv.setId(appUtil.generateViewId());
         iv.setImageResource(R.mipmap.meto_card_test);
         iv.setBackgroundResource(drawable.dialog_holo_light_frame);
         setFrontCard(iv);
@@ -73,7 +83,6 @@ public class CardLayout extends RelativeLayout {
     public void setCardDimensions(CardLayout.LayoutParams params) {
         frontCard.setLayoutParams(params);
 
-        // TODO: Eventually this if statement will be removed and replaced
         if(backCard != null)
             backCard.setLayoutParams(params);
     }
@@ -109,7 +118,7 @@ public class CardLayout extends RelativeLayout {
     public void setBackCard(ImageView backCard, int imgResource) {
         // initially make this invisible
         backCard.setAlpha(0f);
-        backCard.setId(FUTIL.generateViewId());
+        backCard.setId(appUtil.generateViewId());
         backCard.setImageResource(imgResource);
         backCard.setBackgroundResource(drawable.dialog_holo_light_frame);
         backCard.setTag(imgResource);
@@ -119,11 +128,11 @@ public class CardLayout extends RelativeLayout {
 
     /**
      *
-     * @param event
-     * @return
+     * @param event MotionEvent the user's motion event UI interaction
+     * @return boolean whether or not a specific event has occurred
      */
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
         if(DEBUG) Log.i(TAG, "Card id: [" + this.getId() + "] Selected.");
 
@@ -138,6 +147,10 @@ public class CardLayout extends RelativeLayout {
         return false;
     }
 
+    /**
+     * Assigns the onTouchListener to this specific card
+     * @param listener the OnCardTouchListener
+     */
     public void setOnCardTouchListener(OnCardTouchListener listener){
         cardTouchListener = listener;
     }

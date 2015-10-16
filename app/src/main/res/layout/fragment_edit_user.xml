@@ -58,10 +58,10 @@
                     android:textColorHint="#868686"
                     android:background="@drawable/bottom_border_selector"
                     android:gravity="center_vertical|start"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:paddingLeft="@dimen/activity_half_margin"
+                    android:paddingRight="@dimen/activity_half_margin"
                     android:layout_marginTop="10dp"
-                    android:textColor="#36454b"/>
+                    android:textColor="@color/app_main"/>
 
                 <TextView
                     android:id="@+id/submit_edit_password"
@@ -95,10 +95,10 @@
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -109,10 +109,10 @@
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -123,10 +123,10 @@
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -137,10 +137,10 @@
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
 
             <com.dev.melosz.melodroid.classes.IMEListenerEditText
                 android:layout_width="match_parent"
@@ -152,10 +152,10 @@
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b">
+                android:textColor="@color/app_main">
             </com.dev.melosz.melodroid.classes.IMEListenerEditText>
 
         </LinearLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_enabled="false" android:color="#a6a6a6"></item>
-    <item android:state_enabled="true" android:color="#10384a"></item>
-    <item android:color="#36454b"></item>
+    <item android:state_enabled="false" android:color="@color/button_text_disabled"></item>
+    <item android:state_enabled="true" android:color="@color/button_text_enabled"></item>
+    <item android:color="@color/app_main"></item>
 </selector>

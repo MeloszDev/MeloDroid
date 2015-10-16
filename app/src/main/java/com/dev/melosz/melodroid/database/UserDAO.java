@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
 import com.dev.melosz.melodroid.classes.AppUser;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class UserDAO extends AbstractDAO {
     private final String USER_TABLE_NAME = AppUserContract.AppUserEntry.TABLE_NAME;
 
     // Helper Utility class
-    private FragmentUtil FUTIL = new FragmentUtil();
+    private AppUtil appUtil = new AppUtil();
 
     // Key String constants for AppUser Table
     private String KEY_ID = AppUserContract.AppUserEntry.COL_ID;
@@ -89,7 +89,7 @@ public class UserDAO extends AbstractDAO {
         }
         finally {
             if(DEBUG) log.i(TAG, METHOD, user.getUserName()
-                    + " account updated. Fields below: " + FUTIL.prettyPrintObject(user));
+                    + " account updated. Fields below: " + appUtil.prettyPrintObject(user));
         }
     }
 
@@ -118,7 +118,7 @@ public class UserDAO extends AbstractDAO {
                 setUser = makeUserByCursor(c);
 
                 if(DEBUG) log.i(TAG, METHOD, "User [" + setUser.getUserName() +
-                        "] Obtained. Fields below:\n." + FUTIL.prettyPrintObject(setUser));
+                        "] Obtained. Fields below:\n." + appUtil.prettyPrintObject(setUser));
 
                 c.close();
             }
@@ -206,7 +206,7 @@ public class UserDAO extends AbstractDAO {
 
         if(DEBUG){
             for(AppUser u : users) {
-                log.i(USER_TABLE_NAME, METHOD, "Found user: " + FUTIL.prettyPrintObject(u));
+                log.i(USER_TABLE_NAME, METHOD, "Found user: " + appUtil.prettyPrintObject(u));
             }
         }
 
@@ -239,6 +239,7 @@ public class UserDAO extends AbstractDAO {
         cvs.put(KEY_CITY, user.getCity());
         cvs.put(KEY_STATE, user.getState());
         cvs.put(KEY_ZIP, user.getZip());
+        cvs.put(KEY_SCORE, user.getScore());
         cvs.put(KEY_LOGGED, user.isLogged() ? 1 : 0);
         return cvs;
     }

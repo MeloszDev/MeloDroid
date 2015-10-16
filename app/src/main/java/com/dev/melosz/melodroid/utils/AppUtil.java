@@ -3,12 +3,15 @@ package com.dev.melosz.melodroid.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
@@ -28,9 +31,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Helper Utility class for all Activities and Fragments
  *
  */
-public class FragmentUtil {
+public class AppUtil {
     // Used for generating viewIDs
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
+
+    // The title bar global font
+    private static final String TITLE_FONT = "neuropol.ttf";
 
     // Colors used in the tab indicator
     final int GREY = Color.parseColor("#C4C4C4");
@@ -189,10 +195,19 @@ public class FragmentUtil {
     }
 
     /**
+     *
+     * @param assets
+     * @param tv
+     */
+    public void setTitleFont(AssetManager assets, TextView tv) {
+        Typeface tf = Typeface.createFromAsset(assets, TITLE_FONT);
+        tv.setTypeface(tf);
+    }
+    /**
      * Generates a unique ID. Used for each dynamically created view
      * @return int the new unique ID
      */
-    public static int generateViewId() {
+    public int generateViewId() {
         for (; ; ) {
             final int result = sNextGeneratedId.get();
 

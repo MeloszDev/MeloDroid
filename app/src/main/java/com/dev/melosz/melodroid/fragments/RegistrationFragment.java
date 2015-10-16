@@ -10,7 +10,6 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,7 +26,7 @@ import com.dev.melosz.melodroid.activities.HomeScreenActivity;
 import com.dev.melosz.melodroid.activities.MyActivity;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.classes.IMEListenerEditText;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
 /**
@@ -51,7 +50,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     final Handler handler = new Handler();
 
     // Helper utility class
-    private FragmentUtil FUTIL = new FragmentUtil();
+    private AppUtil appUtil = new AppUtil();
 
     // Fragment interaction views
     private EditText unET;
@@ -126,7 +125,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
         };
 
         // Initially disable submit button
-        setValidity(VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView));
+        setValidity(VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView));
 
         // Clear default focus'
         clearAllFocus();
@@ -146,7 +145,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         currentET.setSelection(result.length());
                     }
 
-                    VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                    VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
 
                     // Set button validity explicitly in case it has changed
                     setValidity(VALID);
@@ -170,7 +169,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString(getString(R.string.preference_stored_user),
                                          user.getUserName());
-                        editor.commit();
+                        editor.apply();
                         Toast.makeText(CTX,
                                        "Welcome " + user.getUserName() + "!",
                                        Toast.LENGTH_SHORT).show();
@@ -196,11 +195,15 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                 return false;
             }
         });
+
         // Listen for Back button
         phoneET.setKeyImeChangeListener(new IMEListenerEditText.KeyImeChange() {
             @Override
-            public void onKeyIme(int keyCode, KeyEvent event) {
-                // TODO
+                public void onKeyIme(int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK){
+                    System.out.println("BACK BUTTON PRESSED");
+                    validatePhone(phoneET);
+                }
             }
         });
 
@@ -266,7 +269,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         VALID = false;
                     }
                     else {
-                        VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                         attachDetachInvalidBorder(unET, true, null);
                     }
 
@@ -279,7 +282,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                     }
 
                     else {
-                        VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                         attachDetachInvalidBorder(pwET, true, null);
                         attachDetachInvalidBorder(pw2ET, true, null);
                     }
@@ -290,7 +293,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                             pw2ET.getText().toString().length() != 0)
                         VALID = checkPasswordMatch(pwET, pw2ET);
                     else {
-                        VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                         attachDetachInvalidBorder(pwET, true, null);
                         attachDetachInvalidBorder(pw2ET, true, null);
                     }
@@ -305,7 +308,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         VALID = false;
                     }
                     else {
-                        VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                         attachDetachInvalidBorder(emailET, true, null);
                     }
                     break;
@@ -318,7 +321,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         VALID = false;
                     }
                     else {
-                        VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                         attachDetachInvalidBorder(zipET, true, null);
                     }
                     break;
@@ -327,12 +330,12 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                     if (phoneET.getText().toString().length() != 0)
                         validatePhone(phoneET);
                     else {
-                        VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                         attachDetachInvalidBorder(phoneET, true, null);
                     }
                     break;
                 default:
-                    VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+                    VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
                     break;
             }
             // If all fields have been filled out, then set the button Validity
@@ -392,7 +395,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
         attachDetachInvalidBorder(phoneET, VALID, message);
 
         if(VALID)
-            VALID = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+            VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
 
         setValidity(VALID);
     }
@@ -417,7 +420,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
             attachDetachInvalidBorder(pw2ET, false, null);
         }
         if (match)
-            match = FUTIL.enableButtonByTextFields(ET_BUNDLE, mView);
+            match = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
 
         return match;
     }

@@ -48,12 +48,12 @@
                 android:inputType="textPersonName"
                 android:hint="@string/username_field"
                 android:maxLength="16"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textColor="#36454b" />
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -61,13 +61,13 @@
                 android:inputType="textPassword"
                 android:hint="@string/password_field"
                 android:maxLength="24"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -75,13 +75,13 @@
                 android:inputType="textPassword"
                 android:hint="@string/password_2_field"
                 android:maxLength="24"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -89,13 +89,13 @@
                 android:inputType="textEmailAddress"
                 android:hint="@string/email_field"
                 android:maxLength="34"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -103,13 +103,13 @@
                 android:inputType="number"
                 android:hint="@string/zip_field"
                 android:maxLength="5"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b" />
+                android:textColor="@color/app_main" />
 
             <com.dev.melosz.melodroid.classes.IMEListenerEditText
                 android:layout_width="match_parent"
@@ -118,13 +118,13 @@
                 android:inputType="phone"
                 android:hint="@string/phone_field"
                 android:maxLength="20"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b">
+                android:textColor="@color/app_main">
             </com.dev.melosz.melodroid.classes.IMEListenerEditText>
 
             <Button

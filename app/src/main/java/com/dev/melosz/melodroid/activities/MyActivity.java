@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +21,8 @@ import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.UserDAO;
 import com.dev.melosz.melodroid.drawable.BorderDrawable;
 import com.dev.melosz.melodroid.fragments.RegistrationFragment;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
+import com.dev.melosz.melodroid.utils.DepthPageTransformer;
 import com.dev.melosz.melodroid.utils.LogUtil;
 import com.dev.melosz.melodroid.utils.LoginViewPagerAdapter;
 import com.dev.melosz.melodroid.views.BorderFrameLayout;
@@ -35,7 +35,7 @@ public class MyActivity extends FragmentActivity {
     // Logging controls
     private LogUtil log = new LogUtil();
     private final static String TAG = MyActivity.class.getSimpleName();
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
 
     // Activity and Pager declarations
     private ViewPager mViewPager;
@@ -43,8 +43,8 @@ public class MyActivity extends FragmentActivity {
     private int DP;
     private Context CTX;
 
-    // Fragment Utility helper class
-    private FragmentUtil FUTIL = new FragmentUtil();
+    // Helper utility class
+    private AppUtil appUtil = new AppUtil();
 
     // User DAO adapter for connecting with the databaseHelper
     private UserDAO uDAO;
@@ -52,14 +52,9 @@ public class MyActivity extends FragmentActivity {
     // Store user state if logged in/etc.
     private SharedPreferences prefs;
 
-    // Views
-    private ImageView ivExitButton;
-    private TextView tvLogin;
-    private TextView tvSignup;
-
     /**
      * Default overridden onCreate method
-     * @param savedInstanceState
+     * @param savedInstanceState Bundle
      */
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -78,6 +73,17 @@ public class MyActivity extends FragmentActivity {
         String storedUser = prefs.getString(getString(R.string.preference_stored_user), null);
         if(DEBUG) log.i(TAG, "Stored user is: [" + storedUser + "].");
 
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            TypedValue tv = new TypedValue();
+//            Resources.Theme theme = getTheme();
+//            theme.resolveAttribute(R.attr.colorPrimary, tv, true);
+//            int color = tv.data;
+//
+//            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.app_icon);
+//            ActivityManager.TaskDescription td = new ActivityManager.TaskDescription(null, bm, color);
+//            setTaskDescription(td);
+//            bm.recycle();
+//        }
         // If storedUser isn't null, check to see if the logged flag is set
         userLoggedIn = storedUser != null && checkUserLogged(storedUser);
 
@@ -95,12 +101,15 @@ public class MyActivity extends FragmentActivity {
      */
     public void initializeActivityViews() {
         // Initialize Clickable Views
-        ivExitButton = (ImageView) findViewById(R.id.exit_button);
-        tvLogin = (TextView) findViewById(R.id.login_text);
-        tvSignup = (TextView) findViewById(R.id.signup_text);
+        ImageView ivExitButton = (ImageView) findViewById(R.id.exit_button);
+        TextView tvLogin = (TextView) findViewById(R.id.login_text);
+        TextView tvSignup = (TextView) findViewById(R.id.signup_text);
+        appUtil.setTitleFont(getAssets(), tvLogin);
+        appUtil.setTitleFont(getAssets(), tvSignup);
 
         // Get the screen density and convert the dp into a pixel int
-        DP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
+        DP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1,
+                                             getResources().getDisplayMetrics());
 
         // Instantiate the ViewPager & Adapter
         mViewPager = (ViewPager) findViewById(R.id.fragment_pager);
@@ -119,7 +128,7 @@ public class MyActivity extends FragmentActivity {
                 if(DEBUG) log.i(TAG, "In onPageSelected with Position: [" + position + "]");
 
                 // Hide the keyboard when the page changes
-                FUTIL.hideKeyboard(MyActivity.this);
+                appUtil.hideKeyboard(MyActivity.this);
 
                 // Draw the indicator box around the selected tab
                 setTabSelected(mViewPager.getCurrentItem());
@@ -136,29 +145,29 @@ public class MyActivity extends FragmentActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                FUTIL.hideKeyboard(MyActivity.this);
+                appUtil.hideKeyboard(MyActivity.this);
             }
         });
 
         // Set the Exit Button Listener and prompt dialog
         ivExitButton.setOnClickListener(
-                new ImageView.OnClickListener(){
-                    public void onClick(View v) {
-                        buildConfirmDialog(CTX, getString(R.string.exit_dialogue));
-                    }
+            new ImageView.OnClickListener(){
+                public void onClick(View v) {
+                    buildConfirmDialog(CTX, getString(R.string.exit_dialogue));
                 }
+            }
         );
 
         // Listeners for the tabs
         tvLogin.setOnClickListener(
-                new TextView.OnClickListener(){
-                    public void onClick(View v){
-                        if (mViewPager.getCurrentItem() == 1){
-                            mViewPager.setCurrentItem(0);
-                            setTabSelected(0);
-                        }
+            new TextView.OnClickListener(){
+                public void onClick(View v){
+                    if (mViewPager.getCurrentItem() == 1){
+                        mViewPager.setCurrentItem(0);
+                        setTabSelected(0);
                     }
                 }
+            }
         );
         tvSignup.setOnClickListener(
             new TextView.OnClickListener(){
@@ -181,12 +190,12 @@ public class MyActivity extends FragmentActivity {
         BorderFrameLayout bLayout2 = (BorderFrameLayout) findViewById(R.id.signup_layout_wrapper);
         switch (tab) {
             case 0:
-                FUTIL.clearBackground(bLayout2);
-                FUTIL.setTabBackground(bLayout1, new BorderDrawable(), DP);
+                appUtil.clearBackground(bLayout2);
+                appUtil.setTabBackground(bLayout1, new BorderDrawable(), DP);
                 break;
             case 1:
-                FUTIL.clearBackground(bLayout1);
-                FUTIL.setTabBackground(bLayout2, new BorderDrawable(), DP);
+                appUtil.clearBackground(bLayout1);
+                appUtil.setTabBackground(bLayout2, new BorderDrawable(), DP);
                 break;
             default:
                 break;
@@ -352,56 +361,5 @@ public class MyActivity extends FragmentActivity {
                 });
         AlertDialog alert = builder.create();
         alert.show();
-    }
-
-    public class DepthPageTransformer implements ViewPager.PageTransformer {
-
-        /**
-         * Transforms the login/registration fragments so they slide in or out as if they were
-         * stacked on top of each other to begin with, with a gradual fade.  The visibility needs
-         * to be explicitly changed from View.VISIBLE to View.GONE (or vice versa) or the UI
-         * elements from the first page will be visible, but the interaction will occur on the page
-         * behind it due to the alpha being set to 0.
-         *
-         * @param view View the fragment (page) to transform to/from
-         * @param position float the position of the page relative to the viewport
-         */
-        public void transformPage(View view, float position) {
-            int pageWidth = view.getWidth();
-
-            if (position < -1) { // [-Infinity,-1)
-                // This page is way off-screen to the left.
-                view.setAlpha(0);
-                view.setVisibility(View.GONE);
-
-            } else if (position <= 0) { // [-1,0]
-                // Use the default slide transition when moving to the left page
-                view.setAlpha(1);
-                view.setTranslationX(0);
-
-                if (view.getVisibility()!=View.VISIBLE)
-                    view.setVisibility(View.VISIBLE);
-
-            } else if (position <= 1) { // (0,1]
-                // Fade the page out.
-                view.setAlpha(1 - position);
-
-                // Counteract the default slide transition
-                view.setTranslationX(pageWidth * -position);
-
-                //
-                if (position==1) {
-                    view.setVisibility(View.GONE);
-                } else {
-                    if (view.getVisibility()!=View.VISIBLE)
-                        view.setVisibility(View.VISIBLE);
-                }
-
-            } else { // (1,+Infinity]
-                // This page is way off-screen to the right.
-                view.setAlpha(0);
-                view.setVisibility(View.GONE);
-            }
-        }
     }
 }

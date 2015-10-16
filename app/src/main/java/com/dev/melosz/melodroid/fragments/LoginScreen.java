@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import android.widget.Toast;
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.activities.HomeScreenActivity;
 import com.dev.melosz.melodroid.activities.MyActivity;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
 
@@ -41,8 +40,8 @@ public class LoginScreen extends Fragment {
     // Preferences for this app
     private SharedPreferences prefs;
 
-    // FragmentUtil helper class
-    private FragmentUtil FUTIL = new FragmentUtil();
+    // AppUtil helper class
+    private AppUtil appUtil = new AppUtil();
 
     // View declarations
     private EditText unET;
@@ -64,8 +63,8 @@ public class LoginScreen extends Fragment {
         super.onCreate(savedInstanceState);
 
         CTX = getActivity().getApplicationContext();
-        //        prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
+                                         Context.MODE_PRIVATE);
     }
 
     /**
@@ -78,21 +77,8 @@ public class LoginScreen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_login_screen, container, false);
-        // Register listeners & other initializations
-        initializeView(rootView);
-        return rootView;
-    }
+        View view = inflater.inflate(R.layout.fragment_login_screen, container, false);
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-    /**
-     * Initialization method to set all listeners for UI interaction objects.
-     * @param view the inflated LoginScreen fragment view
-     */
-    public void initializeView(View view) {
         // Initialize and clear focus from the EditText fields
         unET = (EditText) view.findViewById(R.id.username_field);
         pwET = (EditText) view.findViewById(R.id.password_field);
@@ -112,7 +98,7 @@ public class LoginScreen extends Fragment {
         final View tempView = view;
 
         // Initial disable of submitButton. If we got to this fragment, the user is not logged in
-        FUTIL.enableButtonByTextFields(ets, id, tempView);
+        appUtil.enableButtonByTextFields(ets, id, tempView);
 
         // Assign TextWatcher to the Edit Text fields
         for (EditText et : ets) {
@@ -120,7 +106,7 @@ public class LoginScreen extends Fragment {
             et.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-                    FUTIL.enableButtonByTextFields(ets, id, tempView);
+                    appUtil.enableButtonByTextFields(ets, id, tempView);
 
                     // Do NOT allow spaces
                     String result = s.toString().replaceAll(" ", "");
@@ -148,29 +134,29 @@ public class LoginScreen extends Fragment {
                 try {
                     success = ((MyActivity) getActivity()).checkCredentials(new String[]{un, pw});
                 } catch (SQLiteException e) {
-                    Toast.makeText(CTX, "SQLiteException Run Into: " + e.getMessage(), duration).show();
+                    Toast.makeText(CTX, "SQLiteException Run Into: " + e.getMessage(),
+                                   duration).show();
                     if(DEBUG) log.e(TAG, e.getMessage());
                 }
                 if (success) {
                     // Add user to preferences
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString(getString(R.string.preference_stored_user), un);
-                    editor.commit();
+                    editor.apply();
 
-
-                    Toast toast = Toast.makeText(CTX, "Welcome back, " + un + "!", duration);
-                    toast.show();
+                    Toast.makeText(CTX, "Welcome back, " + un + "!", duration).show();
                     ((MyActivity) getActivity()).openHomeScreenActivity(HomeScreenActivity.class);
-                } else {
+                }
+                else {
                     Toast toast = Toast.makeText(CTX, getString(R.string.logon_no_match), duration);
                     toast.show();
-                    FUTIL.hideKeyboard(getActivity());
-                    unET.clearFocus();
+                    appUtil.hideKeyboard(getActivity());
                     pwET.clearFocus();
-                    unET.getText().clear();
                     pwET.getText().clear();
                 }
             }
         });
+
+        return view;
     }
 }

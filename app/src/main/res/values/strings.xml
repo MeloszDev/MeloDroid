@@ -28,7 +28,7 @@
         \nThanks for visiting!
         \n-Melosz</string>
     <string name="melodroid">MeloDroid</string>
-    <string name="memory">Memory Game</string>
+    <string name="memory">Memory</string>
     <string name="user_management">User Management</string>
 
     <!-- User Management Activity -->
@@ -39,6 +39,8 @@
 
     <!-- Memory Game Activity -->
     <string name="memory_new_game">New Game</string>
+    <string name="high_score_label">High: </string>
+    <string name="current_score_label">Current: </string>
 
     <!-- MyActivity - LoginScreen -->
     <string name="login_screen_fragment">Login</string>
@@ -84,4 +86,7 @@
     <!-- Preference Strings -->
     <string name="preference_file_key">com.kozina.marek.PREFERENCES_KEY</string>
     <string name="preference_stored_user">userName</string>
+    <string name="memory_high_score">highScore</string>
+    <string name="memory_user_high_score">userHighScore</string>
+
 </resources>

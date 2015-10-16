@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,9 +18,13 @@ import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
+import com.dev.melosz.melodroid.classes.AppUser;
+import com.dev.melosz.melodroid.database.UserDAO;
+import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
 import com.dev.melosz.melodroid.views.CardLayout;
 
@@ -39,7 +44,10 @@ public class MemoryGameActivity extends Activity implements
     // Logging controls
     private LogUtil log = new LogUtil();
     private static final String TAG = MemoryGameActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
+
+    // Helper utility class
+    AppUtil appUtil = new AppUtil();
 
     // Helper handler for UI interaction delays
     private Handler handler = new Handler();
@@ -65,12 +73,43 @@ public class MemoryGameActivity extends Activity implements
 
     // This int ensures only 2 cards MAX are selected at a time
     private int accumulator;
+
+    // Activity and score variables
+    private Context CTX;
+    private UserDAO uDAO;
+    private SharedPreferences prefs;
+    private AppUser mUser;
+    private int mHighScore;
     private int score;
+
+    // High & Current Score TextViews
+    private TextView mAppHighScoreTV;
+    private TextView mCurrentScoreTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory_game);
+
+        // Get the Activity Context and SharedPreferences
+        CTX = this;
+        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
+                                         Context.MODE_PRIVATE);
+        uDAO = new UserDAO(CTX);
+        uDAO.open();
+
+        TextView titleTV = (TextView) findViewById(R.id.title_bar);
+        appUtil.setTitleFont(getAssets(), titleTV);
+
+        // Get the stored user & high score from the SharedPreferences
+        String activeUser = prefs.getString(getString(R.string.preference_stored_user), null);
+        mHighScore = prefs.getInt(getString(R.string.memory_high_score), 0);
+        if(activeUser != null) {
+            mUser = uDAO.getUserByName(activeUser);
+            if(DEBUG) log.i(TAG, "Current user for this Game: [" + mUser.getUserName() +
+                       "] with a High Score: [" + mUser.getScore() + "].");
+        }
+
         // Get the GridLayout container and apply a global listener to obtain WxH
         mGridLayout = (GridLayout) findViewById(R.id.card_grid_container);
         mGridLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
@@ -81,6 +120,10 @@ public class MemoryGameActivity extends Activity implements
         numCards = numColumns * numRows;
         accumulator = 0;
         score = 0;
+
+        mAppHighScoreTV = (TextView) findViewById(R.id.app_high);
+        mCurrentScoreTV = (TextView) findViewById(R.id.user_high);
+        updateScore();
 
         ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
         optionsIV.setOnClickListener(new ImageView.OnClickListener() {
@@ -184,8 +227,6 @@ public class MemoryGameActivity extends Activity implements
      */
     @Override
     public void OnCardSelected(CardLayout card, boolean selected) {
-
-
             if(DEBUG) {
                 int tag = (int) card.getBackCard().getTag();
                 String rName = getResources().getResourceName(tag);
@@ -213,6 +254,13 @@ public class MemoryGameActivity extends Activity implements
             }
     }
 
+    private void updateScore() {
+        String preAppHigh = getString(R.string.high_score_label);
+        String preAppCurrent = getString(R.string.current_score_label);
+
+        mAppHighScoreTV.setText(preAppHigh + " [" + mHighScore + "]");
+        mCurrentScoreTV.setText(preAppCurrent + " [" +  score + "]");
+    }
     /**
      * This method performs the animation when a card is clicked
      * @param card the CardLayout card
@@ -329,6 +377,7 @@ public class MemoryGameActivity extends Activity implements
             // flip both cards back to their original state
             flipCardBack(currentCard, cardToMatch);
         }
+        updateScore();
     }
 
     /**
@@ -347,9 +396,45 @@ public class MemoryGameActivity extends Activity implements
                 complete = true;
         }
         if(complete) {
-            Toast.makeText(this,
-                    "You have completed the game with a score of: [" + score + "] Congratulations!",
-                    Toast.LENGTH_LONG).show();
+            int userScore = mUser.getScore();
+            String userName = mUser.getUserName();
+            String oldHSName =
+                    prefs.getString(getString(R.string.memory_user_high_score), "MeloDroid");
+            String message;
+
+            // New user high score
+            if(score > userScore){
+                message = userName + " You have beat your old High Score of ["
+                        + userScore + "] with a new personal best High Score of ["
+                        + score + "]! Congratulations!";
+
+                // Update user best score
+                mUser.setScore(score);
+                uDAO.updateUser(mUser);
+
+                // New app-wide high score
+                if(score > mHighScore){
+                    message = userName + " You have beat " + oldHSName + "'s High Score of ["
+                            + mHighScore + "] with a new App High Score of ["
+                            + score + "]! Congratulations!";
+
+                    // Add score & userName to preferences
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt(getString(R.string.memory_high_score), score);
+                    editor.putString(getString(R.string.memory_user_high_score), userName);
+                    editor.apply();
+
+                    // Set the App High Score as current for new games
+                    mHighScore = score;
+                }
+            }
+            else {
+                message =
+                    "You have completed the game with a score of: [" + score + "] Congratulations!";
+            }
+
+            // Display the toast with the previously constructed message
+            Toast.makeText(CTX, message, Toast.LENGTH_LONG).show();
 
             // Wait 3 seconds, then ask the user if they would like to start a new game
             handler.postDelayed(new Runnable() {
@@ -469,6 +554,7 @@ public class MemoryGameActivity extends Activity implements
         cardToMatch = null;
         cards = null;
         cardsBuilt = false;
+        updateScore();
         buildCards();
     }
 
@@ -486,7 +572,6 @@ public class MemoryGameActivity extends Activity implements
                     public void onClick(DialogInterface dialog, int id) {
                         reset();
                     }
-
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

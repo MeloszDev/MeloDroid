@@ -12,15 +12,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="#36454b"
-            android:orientation="horizontal"
-            android:layout_alignParentTop="true">
+            android:background="@color/app_main"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="@mipmap/app_icon"
-                android:layout_marginLeft="10dp" />
+                android:background="@mipmap/ic_meto_launcher"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center_vertical"/>
 
             <!-- This LinearLayout wraps the TextView so the borders can be highlighted.  -->
             <LinearLayout
@@ -28,6 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_gravity="center_horizontal|bottom">
 
                 <com.dev.melosz.melodroid.views.BorderFrameLayout
@@ -40,8 +42,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/melodroid"
-                        android:textColor="#ffffff"
-                        android:textSize="20sp"
+                        android:textColor="@color/title_bar_text"
+                        android:textSize="@dimen/title_bar_text"
                         android:layout_marginRight="5dp"
                         android:layout_marginLeft="5dp"
                         android:layout_marginBottom="5dp"/>
@@ -52,6 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:gravity="right"
                 android:orientation="horizontal">
 
@@ -61,7 +64,8 @@
                     android:layout_height="20dp"
                     android:background="@mipmap/list6"
                     android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginRight="5dp"/>
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"/>
             </LinearLayout>
         </LinearLayout>
 

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,15 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.AppUserContract;
 import com.dev.melosz.melodroid.database.UserDAO;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
-
-import java.util.List;
 
 /**
  * Created by Marek Kozina 09/28/2015
@@ -35,6 +35,9 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
     private LogUtil log = new LogUtil();
     private static final String TAG = HomeScreenActivity.class.getSimpleName();
     private static final boolean DEBUG = false;
+
+    // Helper utility class
+    AppUtil appUtil = new AppUtil();
 
     // The current logged-in user
     private AppUser mainUser;
@@ -50,9 +53,13 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final int version = Build.VERSION.SDK_INT;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         CTX = this;
+
+        TextView titleTV = (TextView) findViewById(R.id.title_bar);
+        appUtil.setTitleFont(getAssets(), titleTV);
 
         prefs = CTX.getSharedPreferences
                 (getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -165,7 +172,7 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
                         // Update preferences and the db of the log-out
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString(getString(R.string.preference_stored_user), null);
-                        editor.commit();
+                        editor.apply();
 
                         // Update the isLogged flag for this particular user
                         mainUser.setLogged(false);

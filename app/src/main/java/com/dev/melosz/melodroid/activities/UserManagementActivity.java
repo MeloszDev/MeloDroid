@@ -26,7 +26,7 @@ import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.UserDAO;
 import com.dev.melosz.melodroid.fragments.EditUserFragment;
-import com.dev.melosz.melodroid.utils.FragmentUtil;
+import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class UserManagementActivity extends FragmentActivity
     private Handler handler = new Handler();
 
     // Base utility class
-    FragmentUtil FUTIL = new FragmentUtil();
+    AppUtil appUtil = new AppUtil();
 
     // DAO database adapter
     private UserDAO uDAO;
@@ -81,6 +81,9 @@ public class UserManagementActivity extends FragmentActivity
         mContainerView = (ViewGroup) findViewById(R.id.container);
         ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
 
+        TextView titleTV = (TextView) findViewById(R.id.title_bar);
+        appUtil.setTitleFont(getAssets(), titleTV);
+
         CTX = this;
         containerVisible = true;
 
@@ -91,10 +94,10 @@ public class UserManagementActivity extends FragmentActivity
         if(DEBUG) {
             log.i(TAG, "Creating Dummy User List");
             // Only need to run this on new install instances
-            users = FUTIL.makeDummyUserList();
+            users = appUtil.makeDummyUserList();
             for(AppUser user : users) {
                 uDAO.saveNewUser(user);
-                FUTIL.prettyPrintObject(user);
+                appUtil.prettyPrintObject(user);
             }
         }
 
@@ -157,9 +160,7 @@ public class UserManagementActivity extends FragmentActivity
                 // Hide the "empty" view since there is now at least one item in the list.
                 findViewById(android.R.id.empty).setVisibility(View.GONE);
 
-                //TODO: Create EditUserFragment
-                int duration = Toast.LENGTH_SHORT;
-                Toast.makeText(CTX, "Not implemented yet!", duration).show();
+                Toast.makeText(CTX, "Not implemented yet!", Toast.LENGTH_SHORT).show();
 
                 return true;
         }
@@ -191,7 +192,7 @@ public class UserManagementActivity extends FragmentActivity
         final AppUser currentUser = user;
         // Generate new IDs for the fragment containers so they can be targeted separately
         fragContainer = newView.getChildAt(1);
-        fragContainer.setId(FUTIL.generateViewId());
+        fragContainer.setId(appUtil.generateViewId());
 
         // Set the text in the new row to the user.
         ((TextView) newView.findViewById(android.R.id.text1)).setText(user.getUserName());
@@ -257,8 +258,8 @@ public class UserManagementActivity extends FragmentActivity
             mEditFrag = fragment;
         }
 
-        // Checks if the container Layout is visible or not and populates or de-populates
-        // the fragment container accordingly
+        // Checks if the container Layout is visible or not and populates or de-populates the
+        // fragment container accordingly
         if (rowClicked != null && rowClicked == fragContainer.getId() && containerVisible) {
             // close the fragment container
             fragTran.commit();
@@ -292,7 +293,7 @@ public class UserManagementActivity extends FragmentActivity
                         if(uDAO.deleteUser(deleteUser)) {
                             Toast.makeText(CTX,
                                     "Successfully deleted user [" + deleteUser.getUserName()
-                                            + "]", Toast.LENGTH_SHORT).show();
+                                    + "]", Toast.LENGTH_SHORT).show();
                         }
 
                         mContainerView.removeView(view);

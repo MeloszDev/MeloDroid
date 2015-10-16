@@ -45,12 +45,12 @@
                 android:id="@+id/username_field"
                 android:hint="@string/username_field"
                 android:maxLength="16"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textColor="#36454b"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
+                android:textColor="@color/app_main"
                 android:inputType="textPersonName"/>
             <EditText
                 android:layout_width="match_parent"
@@ -58,14 +58,14 @@
                 android:id="@+id/password_field"
                 android:inputType="textPassword"
                 android:hint="@string/password_field"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:paddingLeft="@dimen/activity_half_margin"
+                android:paddingRight="@dimen/activity_half_margin"
                 android:maxLength="24"
-                android:textColorHint="#898989"
+                android:textColorHint="@color/edit_text_hint"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
                 android:layout_marginTop="10dp"
-                android:textColor="#36454b"/>
+                android:textColor="@color/app_main"/>
 
             <LinearLayout
                 android:layout_marginTop="10dp"

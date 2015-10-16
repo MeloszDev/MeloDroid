@@ -9,7 +9,7 @@
                   android:showDividers="middle"
                   android:layout_marginLeft="5dp"
                   android:divider="?android:dividerVertical"
-                  android:dividerPadding="8dp"
+                  android:dividerPadding="@dimen/activity_half_margin"
                   android:gravity="center">
         <!-- Dummy text view that will display the AppUser username. -->
         <TextView android:id="@android:id/text1"
