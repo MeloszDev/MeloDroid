@@ -1,10 +1,10 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/edit_user_fragment"
+    android:id="@+id/edit_contact_fragment"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    tools:context="com.dev.melosz.melodroid.fragments.EditUserFragment">
+    tools:context="com.dev.melosz.melodroid.fragments.EditContactFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,11 +1,8 @@
 package com.dev.melosz.melodroid.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.dev.melosz.melodroid.utils.LogUtil;
 
@@ -24,14 +21,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper dbInstance;
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 8;
 
     // The name of the database file on the file system
     private static final String DATABASE_NAME = "TestApp.db";
 
-    // Define Table Names which will be built in the onCreate() method here
-    // The name of the user table
+    // Table Names which will be dropped onUpgrade
     private static final String USER_TABLE = AppUserContract.AppUserEntry.TABLE_NAME;
+    private static final String CONTACT_TABLE = ContactContract.ContactEntry.TABLE_NAME;
+
+    // The Create table SQL Strings for each table
+    private static final String CREATE_USER_TABLE = AppUserContract.SQL_CREATE;
+    private static final String CREATE_CONTACT_TABLE = ContactContract.SQL_CREATE;
+
 
     /**
      * Method used to initialize the DatabaseHelper. This guarantees that only one instance of this
@@ -61,6 +63,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Forces referential integrity by enabling foreign keys
+     * @param db the database being accessed
+     */
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if(!db.isReadOnly()){
+            // Enable Foreign Key Support
+            db.execSQL("PRAGMA foreign_keys = ON;");
+        }
+    }
+
+    /**
      * Creates the underlying database with the SQL_CREATE queries from the contract classes to
      * create the tables and initialize the data. The onCreate is triggered the first time someone
      * tries to access the database with the getReadableDatabase or getWritableDatabase methods.
@@ -70,9 +85,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         METHOD = "onCreate()";
-        log.i(TAG, METHOD, "Creating Database: [" + DATABASE_NAME + "].");
+
         // Create the db to contain the data for AppUser
-        db.execSQL(AppUserContract.SQL_CREATE);
+        if(DEBUG) log.i(TAG, METHOD, "Creating Database: [" + DATABASE_NAME + "].");
+        db.execSQL(CREATE_USER_TABLE);
+        db.execSQL(CREATE_CONTACT_TABLE);
     }
 
     /**
@@ -86,18 +103,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         METHOD = "onUpgrade()";
+
         // Logs the the process of the DB upgrade
         if(DEBUG) log.i(TAG,
                 METHOD,
-                "Ugrading from version [" + oldVersion + "] to [" + newVersion + "]");
-//        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
-        try {
-            db.execSQL(AppUserContract.SQL_UPDATE);
-        } catch (SQLiteException e) {
-            if(DEBUG) log.e(TAG,
-                    METHOD, "Unable to update Database ["
-                    + this.getDatabaseName() + "] Exception: " + e.getLocalizedMessage());
-        }
-//        onCreate(db);
+                "Ugrading Database from version [" + oldVersion + "] to [" + newVersion + "]");
+
+        // Drop existing tables. TODO: If this is ever released, must implement data migration
+        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + CONTACT_TABLE);
+
+        // Recreate the db
+        onCreate(db);
     }
 }

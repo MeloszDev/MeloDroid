@@ -35,13 +35,10 @@ public class LoginScreen extends Fragment {
     private final static boolean DEBUG = false;
 
     // Application context
-    private Context CTX;
+    private Context mCTX;
 
     // Preferences for this app
     private SharedPreferences prefs;
-
-    // AppUtil helper class
-    private AppUtil appUtil = new AppUtil();
 
     // View declarations
     private EditText unET;
@@ -62,8 +59,8 @@ public class LoginScreen extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        CTX = getActivity().getApplicationContext();
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
+        mCTX = getActivity().getApplicationContext();
+        prefs = mCTX.getSharedPreferences(getString(R.string.preference_file_key),
                                          Context.MODE_PRIVATE);
     }
 
@@ -98,7 +95,7 @@ public class LoginScreen extends Fragment {
         final View tempView = view;
 
         // Initial disable of submitButton. If we got to this fragment, the user is not logged in
-        appUtil.enableButtonByTextFields(ets, id, tempView);
+        AppUtil.enableButtonByTextFields(ets, id, tempView);
 
         // Assign TextWatcher to the Edit Text fields
         for (EditText et : ets) {
@@ -106,7 +103,7 @@ public class LoginScreen extends Fragment {
             et.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-                    appUtil.enableButtonByTextFields(ets, id, tempView);
+                    AppUtil.enableButtonByTextFields(ets, id, tempView);
 
                     // Do NOT allow spaces
                     String result = s.toString().replaceAll(" ", "");
@@ -134,7 +131,7 @@ public class LoginScreen extends Fragment {
                 try {
                     success = ((MyActivity) getActivity()).checkCredentials(new String[]{un, pw});
                 } catch (SQLiteException e) {
-                    Toast.makeText(CTX, "SQLiteException Run Into: " + e.getMessage(),
+                    Toast.makeText(mCTX, "SQLiteException Run Into: " + e.getMessage(),
                                    duration).show();
                     if(DEBUG) log.e(TAG, e.getMessage());
                 }
@@ -144,13 +141,13 @@ public class LoginScreen extends Fragment {
                     editor.putString(getString(R.string.preference_stored_user), un);
                     editor.apply();
 
-                    Toast.makeText(CTX, "Welcome back, " + un + "!", duration).show();
+                    Toast.makeText(mCTX, "Welcome back, " + un + "!", duration).show();
                     ((MyActivity) getActivity()).openHomeScreenActivity(HomeScreenActivity.class);
                 }
                 else {
-                    Toast toast = Toast.makeText(CTX, getString(R.string.logon_no_match), duration);
+                    Toast toast = Toast.makeText(mCTX, getString(R.string.logon_no_match), duration);
                     toast.show();
-                    appUtil.hideKeyboard(getActivity());
+                    AppUtil.hideKeyboard(getActivity());
                     pwET.clearFocus();
                     pwET.getText().clear();
                 }

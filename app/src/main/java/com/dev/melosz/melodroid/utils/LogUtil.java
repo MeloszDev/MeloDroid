@@ -157,6 +157,7 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public void println(int priority, String tag, String msg) {
+        // Log depending on priority
         switch (priority){
             case VERBOSE:
                 Log.v(tag, msg);
@@ -190,27 +191,31 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public void println(int priority, String tag, String method, String msg) {
+        // build the string with the appended Method name
+        msg = method + ": " + msg;
+
+        // Log depending on priority
         switch (priority){
             case VERBOSE:
-                Log.v(tag, method + ": " + msg);
+                Log.v(tag, msg);
                 break;
             case DEBUG:
-                Log.d(tag, method + ": " + msg);
+                Log.d(tag, msg);
                 break;
             case INFO:
-                Log.i(tag, method + ": " + msg);
+                Log.i(tag, msg);
                 break;
             case WARN:
-                Log.w(tag, method + ": " + msg);
+                Log.w(tag, msg);
                 break;
             case ERROR:
-                Log.e(tag, method + ": " + msg);
+                Log.e(tag, msg);
                 break;
             case ASSERT:
-                Log.v(tag, method + ": " + msg);
+                Log.v(tag, msg);
                 break;
             default:
-                Log.i(tag, method + ": " + msg);
+                Log.i(tag, msg);
                 break;
         }
     }

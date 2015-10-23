@@ -5,8 +5,14 @@
     <color name="primary">#36454b</color>
     <color name="primary_dark">#1C2427</color>
     <color name="primary_accent">#50666F</color>
+    <color name="primary_light">#91bec7</color>
+
+    <!-- Misc Colors -->
     <color name="black">#000000</color>
     <color name="overlay_grey">#9a767676</color>
+    <color name="border_divider_grey">#90909090</color>
+    <color name="transparent">@android:color/transparent</color>
+    <color name="invalid_red">#f35163</color>
 
     <!-- Text Colors -->
     <color name="text_link_pressed">#87535A</color>

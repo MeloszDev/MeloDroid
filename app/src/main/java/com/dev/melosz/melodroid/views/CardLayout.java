@@ -16,18 +16,11 @@ import com.dev.melosz.melodroid.utils.AppUtil;
  * Custom subclass of a Relative Layout which contains two image views to represent the front and
  * back cards for the memory game.
  *
- *    Date           Name                  Description of Changes
- * ---------   -------------    --------------------------------------------------------------------
- * 10 Oct 15   M. Kozina        1. Added header & updated resource image
- *
  */
 public class CardLayout extends RelativeLayout {
     // Debugging controls
     private static final String TAG = CardLayout.class.getSimpleName();
     private static final boolean DEBUG = false;
-
-    // Helper utility class
-    private AppUtil appUtil = new AppUtil();
 
     // These will store the images and matching params to check in the memory game
     private ImageView frontCard;
@@ -54,12 +47,12 @@ public class CardLayout extends RelativeLayout {
         super(context);
 
         setLayoutParams(params);
-        setId(appUtil.generateViewId());
+        setId(AppUtil.generateViewId());
 
         // Build the generic frontCard
         ImageView iv = new ImageView(context);
         iv.setLayoutParams(params);
-        iv.setId(appUtil.generateViewId());
+        iv.setId(AppUtil.generateViewId());
         iv.setImageResource(R.mipmap.meto_card_test);
         iv.setBackgroundResource(drawable.dialog_holo_light_frame);
         setFrontCard(iv);
@@ -118,7 +111,7 @@ public class CardLayout extends RelativeLayout {
     public void setBackCard(ImageView backCard, int imgResource) {
         // initially make this invisible
         backCard.setAlpha(0f);
-        backCard.setId(appUtil.generateViewId());
+        backCard.setId(AppUtil.generateViewId());
         backCard.setImageResource(imgResource);
         backCard.setBackgroundResource(drawable.dialog_holo_light_frame);
         backCard.setTag(imgResource);

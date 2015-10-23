@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dev.melosz.melodroid.activities.UserManagementActivity"
+    tools:context="com.dev.melosz.melodroid.activities.ContactManagementActivity"
     android:orientation="vertical">
 
     <LinearLayout
@@ -42,7 +42,7 @@
                         android:id="@+id/title_bar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/user_management"
+                        android:text="@string/contact_management"
                         android:textColor="@color/title_bar_text"
                         android:textSize="@dimen/title_bar_text"
                         android:layout_marginRight="5dp"
@@ -64,7 +64,8 @@
                     android:layout_height="20dp"
                     android:background="@mipmap/list6"
                     android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginRight="5dp"/>
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -98,7 +99,7 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
-        tools:context="com.dev.melosz.melodroid.activities.UserManagementActivity">
+        tools:context="com.dev.melosz.melodroid.activities.ContactManagementActivity">
 
         <!-- A vertical LinearLayout in a ScrollView. This emulates a ListView (and is lighter weight
                  than a ListView when there aren't many rows). -->
@@ -108,7 +109,7 @@
             <!-- Note that this LinearLayout has the "animateLayoutChanges" property set to true.
                  This tells the framework to automatically animate child views (in this case, rows)
                  as they are added to and removed from the LinearLayout. -->
-            <LinearLayout android:id="@+id/container"
+            <LinearLayout android:id="@+id/contact_container"
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
                           android:orientation="vertical"
@@ -117,16 +118,52 @@
                           android:animateLayoutChanges="true"/>
 
         </ScrollView>
+        <LinearLayout android:id="@android:id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:background="@android:drawable/dialog_holo_light_frame">
+            <!-- The "empty" view to show when there are no items in the "list" view defined above. -->
+            <TextView style="?android:textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="32dp"
+                android:maxLines="2"
+                android:text="@string/message_no_contacts"
+                android:textColor="?android:textColorSecondary" />
 
-        <!-- The "empty" view to show when there are no items in the "list" view defined above. -->
-        <TextView android:id="@android:id/empty"
-                  style="?android:textAppearanceSmall"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center"
-                  android:padding="32dp"
-                  android:text="@string/message_no_users"
-                  android:textColor="?android:textColorSecondary" />
+            <TextView style="?android:textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingBottom="5dp"
+                android:text="@string/sync_now"
+                android:textColor="?android:textColorSecondary" />
 
+            <com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                style="@style/ms9_DefaultShadowStyle"
+                android:id="@+id/shadow_item_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:ms9_shadowTranslationZ="2dp"
+                app:ms9_shadowElevation="4dp">
+
+                <ImageButton android:id="@+id/sync_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@mipmap/sync"
+                    android:background="@drawable/img_button_selector"
+                    android:layout_gravity="center"/>
+
+            </com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView>
+        </LinearLayout>
     </FrameLayout>
 </LinearLayout>

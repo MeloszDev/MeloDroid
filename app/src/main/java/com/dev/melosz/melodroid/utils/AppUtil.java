@@ -3,6 +3,7 @@ package com.dev.melosz.melodroid.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -39,17 +41,17 @@ public class AppUtil {
     private static final String TITLE_FONT = "neuropol.ttf";
 
     // Colors used in the tab indicator
-    final int GREY = Color.parseColor("#C4C4C4");
-    final int BLACK = Color.BLACK;
-    final int APP_COLOR = Color.parseColor("#36454b");
+    final static int GREY = Color.parseColor("#C4C4C4");
+    final static int BLACK = Color.BLACK;
+    final static int APP_COLOR = Color.parseColor("#36454b");
 
     /**
-     * This method will enable/disable a button when certain conditions are met
+     * This method will enable/disable a button explicitly when certain conditions are met
      * @param fields EditText fields
      * @param id int the ID of the button in question
      * @param v View the current view
      */
-    public void enableButtonByTextFields(EditText[] fields, int id, View v) {
+    public static void enableButtonByTextFields(EditText[] fields, int id, View v) {
         Button button = (Button) v.findViewById(id);
         boolean disableButton = false;
         for (EditText et : fields) {
@@ -73,11 +75,11 @@ public class AppUtil {
         button.setEnabled(disableButton);
     }
     /**
-     * This method will enable/disable a button when certain conditions are met
+     * This method will return a T/F flag depending on the fields id's and length. Used for enabling
+     * and disabling the submit button from the RegistrationFragment
      * @param fields EditText fields
-     * @param v View the current view
      */
-    public boolean enableButtonByTextFields(EditText[] fields, View v) {
+    public static boolean enableButtonByTextFields(EditText[] fields) {
         boolean disableButton = false;
         for (EditText et : fields) {
             if (et.getId() == R.id.email_field && checkMinLength(6, et)) {
@@ -105,14 +107,14 @@ public class AppUtil {
      * @param et EditText the field
      * @return boolean whether or not the length is below the minimum
      */
-    private boolean checkMinLength(int min, EditText et){
+    private static boolean checkMinLength(int min, EditText et){
         return et.getText().toString().length() <= min;
     }
     /**
      * This method will hide the native android keyboard
      * @param act Activity the current Activity
      */
-    public void hideKeyboard(Activity act) {
+    public static void hideKeyboard(Activity act) {
         View view = act.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager)
@@ -130,7 +132,7 @@ public class AppUtil {
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
-    public void setTabBackground(BorderFrameLayout layout, BorderDrawable bd, int dp) {
+    public static void setTabBackground(BorderFrameLayout layout, BorderDrawable bd, int dp) {
         // get the device's SDK
         int sdk = Build.VERSION.SDK_INT;
         // set the border colors for selected appearance
@@ -158,8 +160,8 @@ public class AppUtil {
      * @param dp int the dp size
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @SuppressWarnings("deprecation")
-    public void setBorderBottom(BorderFrameLayout layout, BorderDrawable bd, int dp) {
+    @SuppressWarnings({ "deprecation", "unused" })
+    public static void setBorderBottom(BorderFrameLayout layout, BorderDrawable bd, int dp) {
         // get the device's SDK
         int sdk = Build.VERSION.SDK_INT;
         // set the border colors for selected appearance
@@ -182,7 +184,7 @@ public class AppUtil {
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
-    public void clearBackground(BorderFrameLayout layout) {
+    public static void clearBackground(BorderFrameLayout layout) {
         int sdk = Build.VERSION.SDK_INT;
         // handle deprecated methods based on the sdk
         if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
@@ -195,11 +197,11 @@ public class AppUtil {
     }
 
     /**
-     *
-     * @param assets
-     * @param tv
+     * Sets the font on a particular TextView
+     * @param assets AssetManager
+     * @param tv TextView the text to apply the font to
      */
-    public void setTitleFont(AssetManager assets, TextView tv) {
+    public static void setTitleFont(AssetManager assets, TextView tv) {
         Typeface tf = Typeface.createFromAsset(assets, TITLE_FONT);
         tv.setTypeface(tf);
     }
@@ -207,7 +209,7 @@ public class AppUtil {
      * Generates a unique ID. Used for each dynamically created view
      * @return int the new unique ID
      */
-    public int generateViewId() {
+    public static int generateViewId() {
         for (; ; ) {
             final int result = sNextGeneratedId.get();
 
@@ -222,11 +224,55 @@ public class AppUtil {
     }
 
     /**
+     * Gets the logged in AppUser stored in the SharedPreferences
+     * @param ctx Context the Application Context
+     * @return String the AppUser.userName
+     */
+    public static String getLoggedUser(Context ctx){
+        SharedPreferences prefs = getSharedPrefs(ctx);
+        return prefs.getString(ctx.getString(R.string.preference_stored_user), null);
+    }
+
+    /**
+     * Obtain the SharedPreferences for this Context
+     * @param ctx Context the Application Context
+     * @return The app's SharedPreferences
+     */
+    public static SharedPreferences getSharedPrefs(Context ctx) {
+        return ctx.getSharedPreferences(ctx.getString(R.string.preference_file_key),
+                Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Method to join strings with a chosen delimiter
+     * @param list the ArrayList of Strings to delimit
+     * @param delimiter String the delimiter desired
+     * @return String the joined and delimited String
+     */
+    public static String joinStrings(List<String> list, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+
+        // For the first iteration, the loopingDelimiter will be blank
+        String loopingDelimiter = "";
+
+        // Iterate through the list and append the delimiter
+        for(String s : list) {
+            sb.append(loopingDelimiter);
+            sb.append(s);
+
+            // Add the delimiter from here on out
+            loopingDelimiter = delimiter;
+        }
+        return sb.toString();
+    }
+
+    /**
      * Converts pixels to dp
      * @param context Context the Application Context
      * @param px int the pixels to convert
      * @return int the converted dp
      */
+    @SuppressWarnings("unused")
     public static int dpFromPx(final Context context, int px) {
         return (int) ((px / context.getResources().getDisplayMetrics().density) +.05);
     }
@@ -237,6 +283,7 @@ public class AppUtil {
      * @param dp int the dp to convert
      * @return int the converted pixels
      */
+    @SuppressWarnings("unused")
     public static int pxFromDp(final Context context, int dp) {
         return (int) ((dp * context.getResources().getDisplayMetrics().density) +.05);
     }
@@ -246,16 +293,25 @@ public class AppUtil {
      * @param obj AppUser the user object to display
      * @return String the JSON formatted output
      */
-    public String prettyPrintObject(Object obj) {
+    public static String prettyPrintObject(Object obj) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(obj);
+    }
+
+    /**
+     * Assigns a random UUID
+     * @return String the random UUID
+     */
+    public static String assignUUID(){
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 
     /**
      * Helper method to make a somewhat-randomly generated
      * @return List of randomized AppUsers
      */
-    public List<AppUser> makeDummyUserList (){
+    public static List<AppUser> makeDummyUserList (){
         List<AppUser> users = new ArrayList<>();
         List<String> names = new ArrayList<>();
         String[] first = new String[]{
@@ -286,9 +342,9 @@ public class AppUtil {
         }
         return users;
     }
-    private String randNum(long dig, long len) {
+    private static String randNum(long dig, long len) {
         String number;
-        int num = (int) (Math.round(Math.random() * dig) + len);
+        int num = (int) Math.abs((Math.round(Math.random() * dig) + len));
         number = Integer.toString(num);
         return number;
     }

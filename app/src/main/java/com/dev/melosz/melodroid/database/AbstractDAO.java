@@ -32,7 +32,7 @@ public abstract class AbstractDAO {
     public DatabaseHelper dbHelper;
 
     // Activity Context
-    public Context APP_CTX;
+    public Context mCTX;
 
     /**
      * Assign the Singleton DatabaseHelper for this DAO
@@ -40,7 +40,7 @@ public abstract class AbstractDAO {
      */
     public AbstractDAO(Context context) {
         dbHelper = DatabaseHelper.getInstance(context);
-        APP_CTX = context;
+        mCTX = context;
     }
 
     /**
@@ -55,6 +55,7 @@ public abstract class AbstractDAO {
      * Close the DatabaseHelper stream
      */
     public void close() {
+        database.close();
         dbHelper.close();
     }
 
@@ -65,17 +66,22 @@ public abstract class AbstractDAO {
      * @param cvs ContentValues which map to DB fields (columns)
      * @param tableName String the table we wish to insert in to
      */
-    public void put(ContentValues cvs, String tableName) {
+    public boolean put(ContentValues cvs, String tableName) {
         METHOD = "put()";
+        boolean success;
         try {
             // Insert the entity in given tableName if it exists
-            database.insert(tableName, null, cvs);
+            database.insertOrThrow(tableName, null, cvs);
+            success = true;
         }
         catch (SQLiteException e){
-            // Table does not exist
+            success = false;
+            // Table does not exist or constraint was violated
             if(DEBUG) log.e(TAG, METHOD, e.getMessage());
+            Toast.makeText(mCTX, "An Error Occurred: " +
+                    e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
-        getAll(tableName);
+        return success;
     }
 
     /**
@@ -84,9 +90,10 @@ public abstract class AbstractDAO {
      * @return List of column and values
      */
     public List getAll(String tableName) {
-        METHOD = "<getALL>";
+        METHOD = "getALL()";
         List<String> entries = new ArrayList<>();
 
+        // Query the table and return all entries
         Cursor c = database.query(tableName, null, null, null, null, null, null);
         int i = 0;
         while (c != null && c.moveToNext()) {
@@ -118,6 +125,8 @@ public abstract class AbstractDAO {
     public void checkTables() {
         METHOD = "checkTables()";
         List<String> outMessage = new ArrayList<>();
+
+        // Query the database for all table names
         Cursor c = database.rawQuery("select name FROM sqlite_master WHERE type = 'table'", null);
         if (c.moveToFirst()) {
             int i = 0;
@@ -146,14 +155,14 @@ public abstract class AbstractDAO {
             database.execSQL("DROP TABLE IF EXISTS " + tableName);
         }
         catch (SQLiteException e) {
-            Toast toast = Toast.makeText(APP_CTX, "Failed to drop table ["
+            Toast toast = Toast.makeText(mCTX, "Failed to drop table ["
                     + tableName + "]. Exception: " + e.getMessage(), Toast.LENGTH_SHORT);
             toast.show();
 
             if(DEBUG) log.e(TAG, METHOD, e.getMessage());
         }
 
-        Toast toast = Toast.makeText(APP_CTX, "Dropped Table: " + tableName + "!",
+        Toast toast = Toast.makeText(mCTX, "Dropped Table: " + tableName + "!",
                 Toast.LENGTH_SHORT);
         toast.show();
     }

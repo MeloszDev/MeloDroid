@@ -41,16 +41,13 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     private final static boolean DEBUG = false;
 
     // Application Context
-    private Context CTX;
+    private Context mCTX;
 
     // Apps SharedPreferences
     private SharedPreferences prefs;
 
     // Handler for runnables
     final Handler handler = new Handler();
-
-    // Helper utility class
-    private AppUtil appUtil = new AppUtil();
 
     // Fragment interaction views
     private EditText unET;
@@ -65,7 +62,6 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     // Global validation vars
     private boolean VALID = false;
     private EditText[] ET_BUNDLE;
-    private View mView;
 
     /**
      * Default constructor
@@ -80,8 +76,8 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        CTX = getActivity().getApplicationContext();
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
+        mCTX = getActivity().getApplicationContext();
+        prefs = mCTX.getSharedPreferences(getString(R.string.preference_file_key),
                                          Context.MODE_PRIVATE);
     }
 
@@ -97,8 +93,6 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_registration, container, false);
-        mView = view;
-
         // Instantiate views
         unET = (EditText) view.findViewById(R.id.username_field_reg);
         pwET = (EditText) view.findViewById(R.id.password_field_reg);
@@ -125,7 +119,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
         };
 
         // Initially disable submit button
-        setValidity(VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView));
+        setValidity(VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE));
 
         // Clear default focus'
         clearAllFocus();
@@ -145,7 +139,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         currentET.setSelection(result.length());
                     }
 
-                    VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                    VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
 
                     // Set button validity explicitly in case it has changed
                     setValidity(VALID);
@@ -170,14 +164,14 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         editor.putString(getString(R.string.preference_stored_user),
                                          user.getUserName());
                         editor.apply();
-                        Toast.makeText(CTX,
+                        Toast.makeText(mCTX,
                                        "Welcome " + user.getUserName() + "!",
                                        Toast.LENGTH_SHORT).show();
                         ((MyActivity) getActivity())
                                 .openHomeScreenActivity(HomeScreenActivity.class);
                     }
                     else
-                        Toast.makeText(CTX,
+                        Toast.makeText(mCTX,
                                        "Registration Failed. Please try again.",
                                        Toast.LENGTH_SHORT)
                                        .show();
@@ -269,7 +263,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         VALID = false;
                     }
                     else {
-                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                         attachDetachInvalidBorder(unET, true, null);
                     }
 
@@ -282,7 +276,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                     }
 
                     else {
-                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                         attachDetachInvalidBorder(pwET, true, null);
                         attachDetachInvalidBorder(pw2ET, true, null);
                     }
@@ -293,7 +287,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                             pw2ET.getText().toString().length() != 0)
                         VALID = checkPasswordMatch(pwET, pw2ET);
                     else {
-                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                         attachDetachInvalidBorder(pwET, true, null);
                         attachDetachInvalidBorder(pw2ET, true, null);
                     }
@@ -308,7 +302,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         VALID = false;
                     }
                     else {
-                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                         attachDetachInvalidBorder(emailET, true, null);
                     }
                     break;
@@ -321,7 +315,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         VALID = false;
                     }
                     else {
-                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                         attachDetachInvalidBorder(zipET, true, null);
                     }
                     break;
@@ -330,12 +324,12 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                     if (phoneET.getText().toString().length() != 0)
                         validatePhone(phoneET);
                     else {
-                        VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                        VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                         attachDetachInvalidBorder(phoneET, true, null);
                     }
                     break;
                 default:
-                    VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+                    VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
                     break;
             }
             // If all fields have been filled out, then set the button Validity
@@ -395,7 +389,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
         attachDetachInvalidBorder(phoneET, VALID, message);
 
         if(VALID)
-            VALID = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+            VALID = AppUtil.enableButtonByTextFields(ET_BUNDLE);
 
         setValidity(VALID);
     }
@@ -420,7 +414,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
             attachDetachInvalidBorder(pw2ET, false, null);
         }
         if (match)
-            match = appUtil.enableButtonByTextFields(ET_BUNDLE, mView);
+            match = AppUtil.enableButtonByTextFields(ET_BUNDLE);
 
         return match;
     }
@@ -433,7 +427,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
      */
     private void attachDetachInvalidBorder(EditText et, boolean set, String message) {
         if(!set) {
-            et.setBackgroundResource(R.drawable.rounded_corners_invalid);
+            et.setBackgroundResource(R.drawable.invalid_input);
 
             // Never set focus on the re-enter password field
             if(et.getId() != R.id.password_field_reg_reenter) {

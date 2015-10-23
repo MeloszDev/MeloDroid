@@ -24,7 +24,7 @@
                      android:layout_height="match_parent"
                      android:src="@mipmap/pencil112"
                      android:background="?android:selectableItemBackground"
-                     android:contentDescription="@string/action_edit_user" />
+                     android:contentDescription="@string/action_edit_contact" />
 
         <!-- A button that, when pressed, will delete this list item row from its container. -->
         <ImageButton android:id="@+id/delete_button"
@@ -32,9 +32,9 @@
                      android:layout_height="match_parent"
                      android:src="@mipmap/ic_list_remove"
                      android:background="?android:selectableItemBackground"
-                     android:contentDescription="@string/action_remove_user" />
+                     android:contentDescription="@string/action_remove_contact" />
     </LinearLayout>
-    <LinearLayout android:id="@+id/edit_user_container"
+    <LinearLayout android:id="@+id/edit_contact_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

@@ -46,9 +46,6 @@ public class MemoryGameActivity extends Activity implements
     private static final String TAG = MemoryGameActivity.class.getSimpleName();
     private static final boolean DEBUG = true;
 
-    // Helper utility class
-    AppUtil appUtil = new AppUtil();
-
     // Helper handler for UI interaction delays
     private Handler handler = new Handler();
 
@@ -75,7 +72,7 @@ public class MemoryGameActivity extends Activity implements
     private int accumulator;
 
     // Activity and score variables
-    private Context CTX;
+    private Context mCTX;
     private UserDAO uDAO;
     private SharedPreferences prefs;
     private AppUser mUser;
@@ -92,14 +89,14 @@ public class MemoryGameActivity extends Activity implements
         setContentView(R.layout.activity_memory_game);
 
         // Get the Activity Context and SharedPreferences
-        CTX = this;
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key),
+        mCTX = this;
+        prefs = mCTX.getSharedPreferences(getString(R.string.preference_file_key),
                                          Context.MODE_PRIVATE);
-        uDAO = new UserDAO(CTX);
+        uDAO = new UserDAO(mCTX);
         uDAO.open();
 
         TextView titleTV = (TextView) findViewById(R.id.title_bar);
-        appUtil.setTitleFont(getAssets(), titleTV);
+        AppUtil.setTitleFont(getAssets(), titleTV);
 
         // Get the stored user & high score from the SharedPreferences
         String activeUser = prefs.getString(getString(R.string.preference_stored_user), null);
@@ -434,7 +431,7 @@ public class MemoryGameActivity extends Activity implements
             }
 
             // Display the toast with the previously constructed message
-            Toast.makeText(CTX, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(mCTX, message, Toast.LENGTH_LONG).show();
 
             // Wait 3 seconds, then ask the user if they would like to start a new game
             handler.postDelayed(new Runnable() {

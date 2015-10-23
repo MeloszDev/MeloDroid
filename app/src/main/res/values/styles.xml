@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/primary_accent</item>
@@ -11,6 +12,18 @@
     <!-- Fullscreen theme -->
     <style name="AppTheme.Fullscreen" parent="AppTheme">
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- Progress Dialog Theme -->
+    <style name="ProgressDialogTheme" parent="AppTheme">
+        <item name="android:textColor">@color/title_bar_text</item>
+        <item name="android:windowBackground">@drawable/dialog_custom_shadow</item>
+    </style>
+
+    <!-- Progress Dialog Theme -->
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:textColor">@color/title_bar_text</item>
+        <item name="android:windowBackground">@drawable/dialog_custom_shadow</item>
     </style>
 
     <!-- Login & Registration button text.  The shadow provides a bevel effect. -->

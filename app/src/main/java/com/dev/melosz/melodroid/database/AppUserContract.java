@@ -25,11 +25,10 @@ public final class AppUserContract {
         public static final String COL_ID = "id";
         public static final String COL_USERNAME = "userName";
         public static final String COL_PASSWORD = "password";
-        public static final String COL_FIRSTNAME = "firstName";
-        public static final String COL_LASTNAME = "lastName";
         public static final String COL_EMAIL = "email";
         public static final String COL_PHONENUMBER = "phoneNumber";
         public static final String COL_ADDRESS = "address";
+        public static final String COL_ADDRESS2 = "address2";
         public static final String COL_CITY = "city";
         public static final String COL_STATE = "state";
         public static final String COL_ZIP = "zip";
@@ -42,16 +41,15 @@ public final class AppUserContract {
     public static final String SQL_CREATE = "CREATE TABLE " +
             AppUserEntry.TABLE_NAME + " (" +
             AppUserEntry.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            AppUserEntry.COL_USERNAME + " TEXT," +
-            AppUserEntry.COL_PASSWORD + " TEXT," +
-            AppUserEntry.COL_FIRSTNAME + " TEXT," +
-            AppUserEntry.COL_LASTNAME + " TEXT," +
-            AppUserEntry.COL_EMAIL + " TEXT," +
-            AppUserEntry.COL_PHONENUMBER + " TEXT," +
-            AppUserEntry.COL_ADDRESS + " TEXT," +
-            AppUserEntry.COL_CITY + " TEXT," +
-            AppUserEntry.COL_STATE + " TEXT," +
-            AppUserEntry.COL_ZIP + " TEXT,"+
+            AppUserEntry.COL_USERNAME + " TEXT UNIQUE NOT NULL," +
+            AppUserEntry.COL_PASSWORD + " TEXT NOT NULL," +
+            AppUserEntry.COL_EMAIL + " TEXT UNIQUE NOT NULL," +
+            AppUserEntry.COL_PHONENUMBER + " TEXT NOT NULL," +
+            AppUserEntry.COL_ADDRESS + " TEXT,"+
+            AppUserEntry.COL_ADDRESS2 + " TEXT,"+
+            AppUserEntry.COL_CITY + " TEXT,"+
+            AppUserEntry.COL_STATE + " TEXT,"+
+            AppUserEntry.COL_ZIP + " TEXT NOT NULL,"+
             AppUserEntry.COL_SCORE + " INTEGER,"+
             AppUserEntry.COL_LOGGED + " INTEGER );";
 

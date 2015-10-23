@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -41,10 +40,7 @@ public class MyActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private LoginViewPagerAdapter viewAdapter;
     private int DP;
-    private Context CTX;
-
-    // Helper utility class
-    private AppUtil appUtil = new AppUtil();
+    private Context mCTX;
 
     // User DAO adapter for connecting with the databaseHelper
     private UserDAO uDAO;
@@ -62,28 +58,17 @@ public class MyActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        CTX = this;
-        prefs = CTX.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        mCTX = this;
+        prefs = AppUtil.getSharedPrefs(mCTX);
 
         // Initialize and open the DB classes
-        uDAO = new UserDAO(CTX);
+        uDAO = new UserDAO(mCTX);
         uDAO.open();
 
         // See if there is a stored user in the UserPreferences
-        String storedUser = prefs.getString(getString(R.string.preference_stored_user), null);
+        String storedUser = AppUtil.getLoggedUser(mCTX);
         if(DEBUG) log.i(TAG, "Stored user is: [" + storedUser + "].");
 
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            TypedValue tv = new TypedValue();
-//            Resources.Theme theme = getTheme();
-//            theme.resolveAttribute(R.attr.colorPrimary, tv, true);
-//            int color = tv.data;
-//
-//            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.app_icon);
-//            ActivityManager.TaskDescription td = new ActivityManager.TaskDescription(null, bm, color);
-//            setTaskDescription(td);
-//            bm.recycle();
-//        }
         // If storedUser isn't null, check to see if the logged flag is set
         userLoggedIn = storedUser != null && checkUserLogged(storedUser);
 
@@ -104,8 +89,8 @@ public class MyActivity extends FragmentActivity {
         ImageView ivExitButton = (ImageView) findViewById(R.id.exit_button);
         TextView tvLogin = (TextView) findViewById(R.id.login_text);
         TextView tvSignup = (TextView) findViewById(R.id.signup_text);
-        appUtil.setTitleFont(getAssets(), tvLogin);
-        appUtil.setTitleFont(getAssets(), tvSignup);
+        AppUtil.setTitleFont(getAssets(), tvLogin);
+        AppUtil.setTitleFont(getAssets(), tvSignup);
 
         // Get the screen density and convert the dp into a pixel int
         DP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1,
@@ -128,7 +113,7 @@ public class MyActivity extends FragmentActivity {
                 if(DEBUG) log.i(TAG, "In onPageSelected with Position: [" + position + "]");
 
                 // Hide the keyboard when the page changes
-                appUtil.hideKeyboard(MyActivity.this);
+                AppUtil.hideKeyboard(MyActivity.this);
 
                 // Draw the indicator box around the selected tab
                 setTabSelected(mViewPager.getCurrentItem());
@@ -145,7 +130,7 @@ public class MyActivity extends FragmentActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                appUtil.hideKeyboard(MyActivity.this);
+                AppUtil.hideKeyboard(MyActivity.this);
             }
         });
 
@@ -153,7 +138,7 @@ public class MyActivity extends FragmentActivity {
         ivExitButton.setOnClickListener(
             new ImageView.OnClickListener(){
                 public void onClick(View v) {
-                    buildConfirmDialog(CTX, getString(R.string.exit_dialogue));
+                    buildConfirmDialog(mCTX, getString(R.string.exit_dialogue));
                 }
             }
         );
@@ -190,12 +175,12 @@ public class MyActivity extends FragmentActivity {
         BorderFrameLayout bLayout2 = (BorderFrameLayout) findViewById(R.id.signup_layout_wrapper);
         switch (tab) {
             case 0:
-                appUtil.clearBackground(bLayout2);
-                appUtil.setTabBackground(bLayout1, new BorderDrawable(), DP);
+                AppUtil.clearBackground(bLayout2);
+                AppUtil.setTabBackground(bLayout1, new BorderDrawable(), DP);
                 break;
             case 1:
-                appUtil.clearBackground(bLayout1);
-                appUtil.setTabBackground(bLayout2, new BorderDrawable(), DP);
+                AppUtil.clearBackground(bLayout1);
+                AppUtil.setTabBackground(bLayout2, new BorderDrawable(), DP);
                 break;
             default:
                 break;
@@ -292,22 +277,19 @@ public class MyActivity extends FragmentActivity {
      */
     public boolean registerNewUser(AppUser user) {
         boolean success;
-        try{
-            uDAO.saveNewUser(user);
-            success = true;
-        }
-        catch (SQLiteException e){
-            if(DEBUG) log.e(TAG, e.getLocalizedMessage());
-            success = false;
-        }
+
+        success = uDAO.saveNewUser(user);
+
         if(success) {
             if(DEBUG) {
                 log.i(TAG,
                         "Updating user [" + user.getUserName() + "] log status to logged in.");
             }
             AppUser newUser = uDAO.getUserByName(user.getUserName());
-            newUser.setLogged(true);
-            uDAO.updateUser(newUser);
+            if(newUser != null) {
+                newUser.setLogged(true);
+                uDAO.updateUser(newUser);
+            }
         }
         return success;
     }

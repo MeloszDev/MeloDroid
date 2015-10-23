@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,8 +19,10 @@ import android.widget.TextView;
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.database.AppUserContract;
+import com.dev.melosz.melodroid.database.ContactDAO;
 import com.dev.melosz.melodroid.database.UserDAO;
 import com.dev.melosz.melodroid.utils.AppUtil;
+import com.dev.melosz.melodroid.utils.BackgroundTask;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
 /**
@@ -36,40 +37,39 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
     private static final String TAG = HomeScreenActivity.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    // Helper utility class
-    AppUtil appUtil = new AppUtil();
-
     // The current logged-in user
     private AppUser mainUser;
 
-    // DAO object for database transactions
+    // DAO objects for database transactions
     private UserDAO uDAO;
+    private ContactDAO cDAO;
 
     // The preferences which store the current user
     private SharedPreferences prefs;
 
     // This Activity Context
-    private Context CTX;
+    private Context mCTX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final int version = Build.VERSION.SDK_INT;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
-        CTX = this;
+        mCTX = this;
 
         TextView titleTV = (TextView) findViewById(R.id.title_bar);
-        appUtil.setTitleFont(getAssets(), titleTV);
+        AppUtil.setTitleFont(getAssets(), titleTV);
 
-        prefs = CTX.getSharedPreferences
-                (getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String currentUser = prefs.getString(getString(R.string.preference_stored_user), "Default");
+        prefs = AppUtil.getSharedPrefs(mCTX);
+        String currentUser = AppUtil.getLoggedUser(mCTX);
+
         if(DEBUG) log.i(TAG, "Stored user is: "
                 + prefs.getString(getString(R.string.preference_stored_user), "No User Stored"));
 
         // Open or re-open the DAO & database
-        uDAO = new UserDAO(CTX);
+        uDAO = new UserDAO(mCTX);
+        cDAO = new ContactDAO(mCTX);
         uDAO.open();
+        cDAO.open();
 
         mainUser = uDAO.getUserByName(currentUser);
 
@@ -111,25 +111,32 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
         int id = item.getItemId();
         if(DEBUG) log.i(TAG, "ID for the item is : " + id + " Which is: " + item.getTitle());
 
+        // Store the username to fetch the user in deeper activities
+        Bundle b = new Bundle();
+        b.putString("userName", mainUser.getUserName());
+
         switch (id) {
-            case R.id.action_get_all_users :
-                if(DEBUG) log.i(TAG, "Logging all data from: " + uDAO.database.toString());
-                uDAO.getAll(AppUserContract.AppUserEntry.TABLE_NAME);
+            case R.id.action_sync_contacts :
+                BackgroundTask bt = new BackgroundTask(mCTX, "Syncing Data", "Please wait...");
+                bt.execute("syncFromHome", String.valueOf(mainUser.getId()), null);
                 returnMe = true;
                 break;
-            case R.id.action_user_management :
-                Intent userManagementIntent = new Intent(this, UserManagementActivity.class);
-                startActivity(userManagementIntent);
+            case R.id.action_contact_management :
+                Intent contactManagementIntent = new Intent(this, ContactManagementActivity.class);
+                contactManagementIntent.putExtras(b);
+                startActivity(contactManagementIntent);
                 break;
             case R.id.action_memory_game :
                 Intent cardIntent = new Intent(this, MemoryGameActivity.class);
+                cardIntent.putExtras(b);
                 startActivity(cardIntent);
                 returnMe = true;
                 break;
             case R.id.action_check_tables :
                 if(DEBUG) log.i(TAG, "Checking tables in: " + uDAO.database.toString());
-                uDAO.checkTables();
+//                uDAO.checkTables();
                 returnMe = true;
+                cDAO.getContactsByUserID(mainUser.getId());
                 break;
             case R.id.action_add_table :
                 if(DEBUG) log.i(TAG, "Adding User Table to: " + uDAO.database.toString());
@@ -156,6 +163,7 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
         }
         return returnMe;
     }
+
     /**
      *
      * @param context Context the Activity ApplicationContext
@@ -163,11 +171,12 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
      */
     private void buildConfirmDialog(Context context, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(message)
+        builder.setTitle(getString(R.string.logoff_title))
+                .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        uDAO = new UserDAO(CTX);
+                        uDAO = new UserDAO(mCTX);
                         uDAO.open();
                         // Update preferences and the db of the log-out
                         SharedPreferences.Editor editor = prefs.edit();

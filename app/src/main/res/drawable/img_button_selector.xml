@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:exitFadeDuration="@android:integer/config_shortAnimTime"
+    android:enterFadeDuration="@android:integer/config_longAnimTime">
+    <item android:state_pressed="true"
+        android:drawable="@drawable/img_button_border_clicked"
+        android:color="@color/primary_light"/>
+
+    <item android:drawable="@drawable/img_button_border"
+        android:color="@color/overlay_grey"/>
+</selector>

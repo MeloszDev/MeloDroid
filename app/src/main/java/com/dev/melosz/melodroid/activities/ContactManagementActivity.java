@@ -24,11 +24,16 @@ import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
+import com.dev.melosz.melodroid.classes.Contact;
+import com.dev.melosz.melodroid.database.ContactDAO;
 import com.dev.melosz.melodroid.database.UserDAO;
-import com.dev.melosz.melodroid.fragments.EditUserFragment;
+import com.dev.melosz.melodroid.fragments.EditContactFragment;
 import com.dev.melosz.melodroid.utils.AppUtil;
+import com.dev.melosz.melodroid.utils.BackgroundTask;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -36,12 +41,12 @@ import java.util.List;
  * Activity for performing User operations such as edit, delete, add, clone, etc.
  *
  */
-public class UserManagementActivity extends FragmentActivity
+public class ContactManagementActivity extends FragmentActivity
         implements PopupMenu.OnMenuItemClickListener {
 
     // Logging controls
     private LogUtil log = new LogUtil();
-    private final static String TAG = UserManagementActivity.class.getSimpleName();
+    private final static String TAG = ContactManagementActivity.class.getSimpleName();
     private final static boolean DEBUG = false;
 
     // The container view which has layout change animations turned on.
@@ -50,20 +55,18 @@ public class UserManagementActivity extends FragmentActivity
     // Handler for delaying the populating of rows to show the animation
     private Handler handler = new Handler();
 
-    // Base utility class
-    AppUtil appUtil = new AppUtil();
-
     // DAO database adapter
     private UserDAO uDAO;
+    private ContactDAO cDAO;
 
     // Application context
-    private Context CTX;
+    private Context mCTX;
 
-    // The list of users to display
-    List<AppUser> users;
+    // The list of contacts to display
+    List<Contact> contacts;
 
     // Stores the current EditFragment
-    private EditUserFragment mEditFrag;
+    private EditContactFragment mEditFrag;
 
     // Holder variables to determine which fragments are populated in the respective container
     private Integer rowClicked;
@@ -71,64 +74,95 @@ public class UserManagementActivity extends FragmentActivity
 
     private View fragContainer;
     private ViewGroup rowGroup;
-    private AppUser rowUser;
+    private Contact rowContact;
+    private AppUser mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_management);
+        setContentView(R.layout.activity_contact_management);
 
-        mContainerView = (ViewGroup) findViewById(R.id.container);
+        mContainerView = (ViewGroup) findViewById(R.id.contact_container);
         ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
 
         TextView titleTV = (TextView) findViewById(R.id.title_bar);
-        appUtil.setTitleFont(getAssets(), titleTV);
+        AppUtil.setTitleFont(getAssets(), titleTV);
 
-        CTX = this;
+        ImageButton syncButton = (ImageButton) findViewById(R.id.sync_button);
+
+        mCTX = this;
         containerVisible = true;
 
-        // Open or re-open the DAO & database
-        uDAO = new UserDAO(CTX);
+        // Open or re-open the DAOs & databases
+        uDAO = new UserDAO(mCTX);
+        cDAO = new ContactDAO(mCTX);
         uDAO.open();
+        cDAO.open();
 
-        if(DEBUG) {
-            log.i(TAG, "Creating Dummy User List");
-            // Only need to run this on new install instances
-            users = appUtil.makeDummyUserList();
-            for(AppUser user : users) {
-                uDAO.saveNewUser(user);
-                appUtil.prettyPrintObject(user);
-            }
+        Bundle b = getIntent().getExtras();
+        if(b != null) {
+            mUser = uDAO.getUserByName(b.getString("userName"));
+        }
+        // Pull all contacts from the database and add them to the dynamic scrollview
+        contacts = cDAO.getContactsByUserID(mUser.getId());
+
+        if(contacts != null && contacts.size() > 0) {
+            populateContacts();
         }
 
-        // Pull all users from the database and add them to the dynamic scrollview
-        users = uDAO.getAllUsers();
+        optionsIV.setOnClickListener(
+            new ImageView.OnClickListener(){
+                public void onClick(View v) {
+                    popupMenu(v);
+                }
+            }
+        );
 
-        int delay = 0;
-        if(users != null) {
+        syncButton.setOnClickListener(
+            new ImageButton.OnClickListener(){
+                public void onClick(View v){
+                    buildConfirmDialog(mCTX, "Syncing contacts may take a while. Proceed?", null, v);
+                }
+            }
+        );
+    }
+
+    /**
+     * Populates the mContainerView by adding a Contact for each row
+     */
+    public void populateContacts(){
+        contacts = cDAO.getContactsByUserID(mUser.getId());
+
+        if(contacts != null && contacts.size() > 0) {
+            // Sort by first name
+            Collections.sort(contacts, new Comparator<Contact>() {
+                @Override
+                public int compare(Contact cont1, Contact cont2) {
+                    // Since the list populates from the bottom up, sort in reverse
+                    return cont2.getFirstName().compareTo(cont1.getFirstName());
+                }
+            });
+
+            // Hide the empty No Contacts layout
             findViewById(android.R.id.empty).setVisibility(View.GONE);
-            for(AppUser user : users) {
-                delay += 100;
-                final AppUser currUser = user;
-                // Delay the rebuilding of the cards so the views can update.
+
+            // Populate the UI by inserting each Contact
+            for (Contact contact : contacts) {
+                int delay = 0;
+                final Contact currContact = contact;
+                // Delay the rebuilding of the contacts so the views can update.
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        addItem(currUser);
+                        System.out.println("Adding Contact: [" + currContact.getFirstName() + "]");
+                        addItem(currContact);
                     }
                 }, delay);
             }
         }
-
-        optionsIV.setOnClickListener(
-                new ImageView.OnClickListener(){
-                    public void onClick(View v) {
-                        popupMenu(v);
-                    }
-                }
-        );
+        else
+            Toast.makeText(mCTX, "No Contacts to sync!", Toast.LENGTH_SHORT).show();
     }
-
     /**
      * Custom menu to override the ActionBar menu
      * @param v View the optionsIV ImageView
@@ -137,14 +171,14 @@ public class UserManagementActivity extends FragmentActivity
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.menu_user_managment, popup.getMenu());
+        inflater.inflate(R.menu.menu_contact_managment, popup.getMenu());
         popup.show();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.menu_user_managment, menu);
+        getMenuInflater().inflate(R.menu.menu_contact_managment, menu);
         return true;
     }
 
@@ -156,11 +190,11 @@ public class UserManagementActivity extends FragmentActivity
                 NavUtils.navigateUpTo(this, new Intent(this, HomeScreenActivity.class));
                 return true;
 
-            case R.id.action_add_user:
+            case R.id.action_add_contact:
                 // Hide the "empty" view since there is now at least one item in the list.
                 findViewById(android.R.id.empty).setVisibility(View.GONE);
 
-                Toast.makeText(CTX, "Not implemented yet!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mCTX, "Not implemented yet!", Toast.LENGTH_SHORT).show();
 
                 return true;
         }
@@ -169,42 +203,42 @@ public class UserManagementActivity extends FragmentActivity
     }
 
     /**
-     * Method to access the UserDAO to obtain an AppUser by the UserName
-     * @param userName String the AppUser UserName
-     * @return the AppUser
+     * Method to access the UserDAO to obtain an Contact by the UserName
+     * @param userName String the Contact UserName
+     * @return the Contact
      */
-    public AppUser getAppUser(String userName){
-        return uDAO.getUserByName(userName);
+    public Contact getContact(String userName){
+        return cDAO.getContactByName(userName, mUser.getId());
     }
 
     /**
      * Adds the rows to the container view and displays the UserName in the row. Clicking X in the
      * row will delete a user and clicking the pencil icon will (in the future) bring up the
-     * EditUserFragment to edit the user's profile.
-     * @param user AppUser the AppUser for that particular row
+     * EditContactFragment to edit the user's profile.
+     * @param contact Contact the Contact for that particular row
      */
-    private void addItem(AppUser user) {
+    private void addItem(Contact contact) {
         // Instantiate a new "row" view.
         final ViewGroup newView = (ViewGroup) LayoutInflater.from(this).inflate(
                 R.layout.user_list_item, mContainerView, false);
 
-        // Instantiate the AppUser attached to the listeners of this row
-        final AppUser currentUser = user;
+        // Instantiate the Contact attached to the listeners of this row
+        final Contact currContact = contact;
         // Generate new IDs for the fragment containers so they can be targeted separately
         fragContainer = newView.getChildAt(1);
-        fragContainer.setId(appUtil.generateViewId());
+        fragContainer.setId(AppUtil.generateViewId());
 
         // Set the text in the new row to the user.
-        ((TextView) newView.findViewById(android.R.id.text1)).setText(user.getUserName());
+        ((TextView) newView.findViewById(android.R.id.text1)).setText(contact.getFirstName());
 
         final ImageButton editButton = (ImageButton) newView.findViewById(R.id.edit_button);
 
-        // Will display the EditUserFragment
+        // Will display the EditContactFragment
         editButton.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Set the current row
-                rowUser = currentUser;
+                rowContact = currContact;
                 rowGroup = newView;
                 fragContainer = newView.getChildAt(1);
                 hideShowFragment();
@@ -214,11 +248,11 @@ public class UserManagementActivity extends FragmentActivity
         newView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message = "Are you sure you want to delete user ["
-                        + currentUser.getUserName() + "]? This process cannot be un-done.";
+                String message = "Are you sure you want to delete Contact ["
+                        + currContact.getFirstName() + "]? This process cannot be un-done.";
 
                 // Prompt the user to confirm if they want to delete the user
-                buildConfirmDialog(CTX, message, currentUser, newView);
+                buildConfirmDialog(mCTX, message, currContact, newView);
 
             }
         });
@@ -239,14 +273,14 @@ public class UserManagementActivity extends FragmentActivity
     }
 
     /**
-     * This method handles the dynamic show/hide of the EditUserFragment
+     * This method handles the dynamic show/hide of the EditContactFragment
      */
     public void hideShowFragment () {
         // Clear previous indicator borders
         clearAllBackground(mContainerView);
 
-        // Build the EditUserFragment
-        EditUserFragment fragment = EditUserFragment.newInstance(rowUser.getUserName());
+        // Build the EditContactFragment
+        EditContactFragment fragment = EditContactFragment.newInstance(rowContact.getFirstName());
         FragmentManager fragMan = getSupportFragmentManager();
         FragmentTransaction fragTran = fragMan.beginTransaction();
 
@@ -267,10 +301,10 @@ public class UserManagementActivity extends FragmentActivity
             rowGroup.setBackgroundResource(0);
         } else {
             // Add the fragment which is the 2nd child of newView ViewGroup as per the xml
-            fragTran.add(rowGroup.getChildAt(1).getId(), mEditFrag, rowUser.getUserName());
+            fragTran.add(rowGroup.getChildAt(1).getId(), mEditFrag, rowContact.getFirstName());
             fragTran.commit();
             containerVisible = true;
-            rowGroup.setBackgroundResource(R.drawable.edit_user_border);
+            rowGroup.setBackgroundResource(R.drawable.edit_contact_border);
         }
         rowClicked = fragContainer.getId();
     }
@@ -280,27 +314,37 @@ public class UserManagementActivity extends FragmentActivity
      * @param context the Activity Context
      * @param message String the message to display in the dialog
      */
-    private void buildConfirmDialog(final Context context, String message, AppUser user, View v) {
-        final AppUser deleteUser = user;
+    private void buildConfirmDialog(final Context context, String message, Contact contact, View v) {
+        final Contact deleteContact = contact;
         final View view = v;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        uDAO.open();
+                        cDAO.open();
+                        if (view.getId() != R.id.sync_button) {
+                            if (cDAO.deleteContact(deleteContact)) {
+                                Toast.makeText(mCTX,
+                                        "Successfully deleted user [" + deleteContact.getFirstName()
+                                                + "]", Toast.LENGTH_SHORT).show();
+                            }
 
-                        if(uDAO.deleteUser(deleteUser)) {
-                            Toast.makeText(CTX,
-                                    "Successfully deleted user [" + deleteUser.getUserName()
-                                    + "]", Toast.LENGTH_SHORT).show();
+                            mContainerView.removeView(view);
+                            // If there are no rows remaining, show the empty view.
+                            if (mContainerView.getChildCount() == 0) {
+                                findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
+                            }
+                            cDAO.close();
+                        }
+                        else {
+                            BackgroundTask task =
+                                    new BackgroundTask(context, "Syncing Data", "Please wait...");
+                            task.execute("syncFromManager",
+                                    String.valueOf(mUser.getId()),
+                                    null);
                         }
 
-                        mContainerView.removeView(view);
-                        // If there are no rows remaining, show the empty view.
-                        if (mContainerView.getChildCount() == 0) {
-                            findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
-                        }
                     }
 
                 })
