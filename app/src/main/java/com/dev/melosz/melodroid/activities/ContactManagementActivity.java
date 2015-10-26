@@ -55,7 +55,7 @@ public class ContactManagementActivity extends FragmentActivity
     // Handler for delaying the populating of rows to show the animation
     private Handler handler = new Handler();
 
-    // DAO database adapter
+    // DAO database adapters
     private UserDAO uDAO;
     private ContactDAO cDAO;
 

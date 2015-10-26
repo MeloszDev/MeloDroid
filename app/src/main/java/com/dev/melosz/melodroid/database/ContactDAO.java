@@ -130,16 +130,14 @@ public class ContactDAO extends AbstractDAO {
         List<Contact> contactList = new ArrayList<>();
         String sql = "SELECT * FROM " + CONTACT_TABLE_NAME;
         Cursor c = database.rawQuery(sql, null);
-        int i = 0;
+
         // If the query was successful, execute for each entry
         if (c != null && c.moveToFirst()) {
             while (!c.isAfterLast()) {
-                i++;
                 // For each entity, make a new Contact and add it to the contactList
                 Contact contact = makeContactByCursor(c);
                 contactList.add(contact);
                 c.moveToNext();
-                System.out.println("["+i+"] CONTACT OBTAINED WITH USER ID: " + contact.getUser_id());
             }
         }
         if(c != null) c.close();
@@ -209,19 +207,23 @@ public class ContactDAO extends AbstractDAO {
         }
     }
     /**
-     *
+     * Checks if a Contact exists for the AppUser and inserts or updates accordinly
      * @param contact String the Contact
-     * @return boolean whether or not the Contact exists in the DB already
+     * @param id the Contact foreign key user_id
      */
     private void saveOrUpdateContact(Contact contact, int id) {
         METHOD = "saveOrUpdateContact()";
+
+        // Get Contact by firstName and the foreign key user_id
         Contact newContact = getContactByName(contact.getFirstName(), id);
         boolean exists = (newContact != null);
 
+        // Update if the Contact exists for the user
         if(exists) {
             updateContact(newContact);
             if(DEBUG) log.i(USER_TABLE_NAME, METHOD, "Found Contact: [" + contact + "].");
         }
+        // Insert if the Contact is new for the user
         else {
             saveNewContact(contact);
             if(DEBUG) log.i(USER_TABLE_NAME, METHOD, "Saving New Contact: [" + contact + "].");
@@ -278,7 +280,8 @@ public class ContactDAO extends AbstractDAO {
     }
 
     /**
-     *
+     * Accesses the devices ContactsContract to pull all of the devices Contacts and puts the
+     * relevant values in a HashMap which will then be used to create or update this app's Contacts.
      * @param userID int the associated userID
      * @return List
      */
@@ -303,10 +306,11 @@ public class ContactDAO extends AbstractDAO {
                 String hasPhoneNumber = ContactsContract.Contacts.HAS_PHONE_NUMBER;
                 // Only map the contact if a phone number exists
                 if(Integer.parseInt(c.getString(c.getColumnIndex(hasPhoneNumber))) > 0) {
+                    // The fields which will attempt to be retrieved from Android's ContactsContract
                     String  firstName, middleName, lastName,
                             phoneNumber,
                             email,
-                            city, street, region, zip, country;
+                            city, street, region, zip;
 
                     // Name query params
                     Uri nameURI = ContactsContract.Data.CONTENT_URI;
@@ -353,12 +357,12 @@ public class ContactDAO extends AbstractDAO {
 
                         // Only add the first occurrence of the names in case their are multiples
                         if(firstName != null) {
-                            contactMap.put("firstName", firstName);
+                            contactMap.put(KEY_FIRSTNAME, firstName);
                             if(middleName != null) {
-                                contactMap.put("middleName", middleName);
+                                contactMap.put(KEY_MIDDLENAME, middleName);
                             }
                             if(lastName != null) {
-                                contactMap.put("lastName", lastName);
+                                contactMap.put(KEY_LASTNAME, lastName);
                             }
                             break;
                         }
@@ -387,7 +391,7 @@ public class ContactDAO extends AbstractDAO {
                             phoneList.add(phoneNumber);
                         }
                         // Add the phone numbers and concatenate with a comma delimiter if > 1
-                        contactMap.put("phoneNumber", AppUtil.joinStrings(phoneList, ", "));
+                        contactMap.put(KEY_PHONENUMBER, AppUtil.joinStrings(phoneList, ", "));
                     }
                     phoneCur.close();
 
@@ -410,7 +414,7 @@ public class ContactDAO extends AbstractDAO {
                             emailList.add(email);
                         }
                         // Add the emails and concatenate with a comma delimiter if > 1
-                        contactMap.put("email", AppUtil.joinStrings(emailList, ", "));
+                        contactMap.put(KEY_EMAIL, AppUtil.joinStrings(emailList, ", "));
                     }
                     emailCur.close();
 
@@ -425,20 +429,17 @@ public class ContactDAO extends AbstractDAO {
                         String tStreet = ContactsContract.CommonDataKinds.StructuredPostal.STREET;
                         String tRegion = ContactsContract.CommonDataKinds.StructuredPostal.REGION;
                         String tZip = ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE;
-                        String tCountry = ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY;
 
                         while(addressCur.moveToNext()){
                             city = addressCur.getString(addressCur.getColumnIndex(tCity));
                             street = addressCur.getString(addressCur.getColumnIndex(tStreet));
                             region = addressCur.getString(addressCur.getColumnIndex(tRegion));
                             zip = addressCur.getString(addressCur.getColumnIndex(tZip));
-                            country = addressCur.getString(addressCur.getColumnIndex(tCountry));
 
-                            contactMap.put("address", street);
-                            contactMap.put("city", city);
-                            contactMap.put("state", region);
-                            contactMap.put("zip", zip);
-                            contactMap.put("country", country);
+                            contactMap.put(KEY_ADDRESS, street);
+                            contactMap.put(KEY_CITY, city);
+                            contactMap.put(KEY_STATE, region);
+                            contactMap.put(KEY_ZIP, zip);
                         }
 
                     }
@@ -458,15 +459,15 @@ public class ContactDAO extends AbstractDAO {
         for(HashMap map : mapList){
             Contact newContact = new Contact();
             newContact.setUser_id(userID);
-            newContact.setFirstName(noNullMapping(map, "firstName"));
-            newContact.setMiddleName(noNullMapping(map, "middleName"));
-            newContact.setLastName(noNullMapping(map, "lastName"));
-            newContact.setEmail(noNullMapping(map, "email"));
-            newContact.setPhoneNumber(noNullMapping(map, "phoneNumber"));
-            newContact.setAddress(noNullMapping(map, "address"));
-            newContact.setCity(noNullMapping(map, "city"));
-            newContact.setState(noNullMapping(map, "state"));
-            newContact.setZip(noNullMapping(map, "zip"));
+            newContact.setFirstName(noNullMapping(map, KEY_FIRSTNAME));
+            newContact.setMiddleName(noNullMapping(map, KEY_MIDDLENAME));
+            newContact.setLastName(noNullMapping(map, KEY_LASTNAME));
+            newContact.setEmail(noNullMapping(map, KEY_EMAIL));
+            newContact.setPhoneNumber(noNullMapping(map, KEY_PHONENUMBER));
+            newContact.setAddress(noNullMapping(map, KEY_ADDRESS));
+            newContact.setCity(noNullMapping(map, KEY_CITY));
+            newContact.setState(noNullMapping(map, KEY_STATE));
+            newContact.setZip(noNullMapping(map, KEY_ZIP));
 
             contactList.add(newContact);
             if(DEBUG) log.i(TAG, METHOD, "New Contact: " + AppUtil.prettyPrintObject(newContact));
