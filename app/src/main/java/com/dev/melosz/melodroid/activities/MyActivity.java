@@ -255,6 +255,9 @@ public class MyActivity extends FragmentActivity {
             }
             if (mUser != null && mUser.isLogged()) {
                 if(DEBUG) log.i(TAG, "User [" + user + "] is already logged in.");
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt(getString(R.string.preference_stored_user_id), mUser.getId());
+                editor.apply();
                 check = true;
             }
         }

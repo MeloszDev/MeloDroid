@@ -60,8 +60,7 @@ public class LoginScreen extends Fragment {
         super.onCreate(savedInstanceState);
 
         mCTX = getActivity().getApplicationContext();
-        prefs = mCTX.getSharedPreferences(getString(R.string.preference_file_key),
-                                         Context.MODE_PRIVATE);
+        prefs = AppUtil.getSharedPrefs(mCTX);
     }
 
     /**

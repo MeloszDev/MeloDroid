@@ -81,6 +81,15 @@
     <string name="state_field">State</string>
     <string name="zip_field">5 Digit Zip Code</string>
 
+    <!-- EditContactFragment Strings -->
+    <string name="contact_first_name">First Name</string>
+    <string name="contact_middle_name">Middle Name</string>
+    <string name="contact_last_name">Last Name</string>
+    <string name="contact_street_address">Street Address</string>
+    <string name="contact_city">City</string>
+    <string name="contact_state">State/Region</string>
+    <string name="contact_zip">Zip</string>
+
     <!-- Toast Strings -->
     <string name="welcome_login_toast">Successfully Logged in as: </string>
     <string name="welcome_back_toast">Welcome back </string>
@@ -89,6 +98,7 @@
     <!-- Preference Strings -->
     <string name="preference_file_key">com.kozina.marek.PREFERENCES_KEY</string>
     <string name="preference_stored_user">userName</string>
+    <string name="preference_stored_user_id">userID</string>
     <string name="memory_high_score">highScore</string>
     <string name="memory_user_high_score">userHighScore</string>
 

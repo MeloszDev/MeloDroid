@@ -23,7 +23,7 @@ public class UserDAO extends AbstractDAO {
     private static final String TAG = UserDAO.class.getSimpleName();
     private String METHOD;
     // Set to false to suppress logging
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     // AppUser table name from AppUserContract Class
     private final String USER_TABLE_NAME = AppUserContract.AppUserEntry.TABLE_NAME;

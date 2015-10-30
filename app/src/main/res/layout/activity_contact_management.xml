@@ -149,6 +149,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:paddingBottom="16dp"
                 app:ms9_shadowTranslationZ="2dp"
                 app:ms9_shadowElevation="4dp">
 

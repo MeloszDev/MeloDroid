@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * Created by Marek Kozina 09/30/2015
- * Activity for performing User operations such as edit, delete, add, clone, etc.
+ * Activity for performing Contact operations such as edit, delete, add, etc.
  *
  */
 public class ContactManagementActivity extends FragmentActivity
@@ -48,6 +48,8 @@ public class ContactManagementActivity extends FragmentActivity
     private LogUtil log = new LogUtil();
     private final static String TAG = ContactManagementActivity.class.getSimpleName();
     private final static boolean DEBUG = false;
+
+    public static final String KEY_USERNAME = "userName";
 
     // The container view which has layout change animations turned on.
     private ViewGroup mContainerView;
@@ -79,6 +81,19 @@ public class ContactManagementActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mCTX = this;
+
+        // Open or re-open the DAOs & databases
+        uDAO = new UserDAO(mCTX);
+        cDAO = new ContactDAO(mCTX);
+        uDAO.open();
+        cDAO.open();
+
+        if(savedInstanceState != null) {
+            String un = savedInstanceState.getString(KEY_USERNAME);
+            mUser = uDAO.getUserByName(un);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_management);
 
@@ -90,25 +105,16 @@ public class ContactManagementActivity extends FragmentActivity
 
         ImageButton syncButton = (ImageButton) findViewById(R.id.sync_button);
 
-        mCTX = this;
         containerVisible = true;
 
-        // Open or re-open the DAOs & databases
-        uDAO = new UserDAO(mCTX);
-        cDAO = new ContactDAO(mCTX);
-        uDAO.open();
-        cDAO.open();
-
         Bundle b = getIntent().getExtras();
-        if(b != null) {
-            mUser = uDAO.getUserByName(b.getString("userName"));
+        if(b != null && mUser == null) {
+            mUser = uDAO.getUserByName(b.getString(KEY_USERNAME));
         }
-        // Pull all contacts from the database and add them to the dynamic scrollview
-        contacts = cDAO.getContactsByUserID(mUser.getId());
 
-        if(contacts != null && contacts.size() > 0) {
-            populateContacts();
-        }
+        if(mUser != null)
+            gatherContacts();
+
 
         optionsIV.setOnClickListener(
             new ImageView.OnClickListener(){
@@ -119,19 +125,41 @@ public class ContactManagementActivity extends FragmentActivity
         );
 
         syncButton.setOnClickListener(
-            new ImageButton.OnClickListener(){
-                public void onClick(View v){
-                    buildConfirmDialog(mCTX, "Syncing contacts may take a while. Proceed?", null, v);
+            new ImageButton.OnClickListener() {
+                public void onClick(View v) {
+                    buildConfirmDialog(mCTX,
+                            "Syncing contacts may take a while. Proceed?",
+                            null,
+                            v);
                 }
             }
         );
     }
 
     /**
+     * Save the userName if orientation changes
+     * @param outState the savedInstanceState when destroying the activity
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_USERNAME, mUser.getUserName());
+    }
+    /**
+     * Runs a background task to gather all of the User's contacts
+     */
+    public void gatherContacts(){
+        BackgroundTask task =
+                new BackgroundTask(mCTX, "Gathering Contacts", "Please wait...");
+        task.execute("gatherContacts",
+                String.valueOf(mUser.getId()),
+                null);
+    }
+    /**
      * Populates the mContainerView by adding a Contact for each row
      */
-    public void populateContacts(){
-        contacts = cDAO.getContactsByUserID(mUser.getId());
+    public void populateContacts(List<Contact> contacts){
+        this.contacts = contacts;
 
         if(contacts != null && contacts.size() > 0) {
             // Sort by first name
@@ -154,14 +182,12 @@ public class ContactManagementActivity extends FragmentActivity
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("Adding Contact: [" + currContact.getFirstName() + "]");
+                        if(DEBUG) log.i(TAG, "Adding Contact: [" + currContact.getFirstName() + "]");
                         addItem(currContact);
                     }
                 }, delay);
             }
         }
-        else
-            Toast.makeText(mCTX, "No Contacts to sync!", Toast.LENGTH_SHORT).show();
     }
     /**
      * Custom menu to override the ActionBar menu
@@ -203,12 +229,12 @@ public class ContactManagementActivity extends FragmentActivity
     }
 
     /**
-     * Method to access the UserDAO to obtain an Contact by the UserName
-     * @param userName String the Contact UserName
+     * Method to access the UserDAO to obtain an Contact by the firstName
+     * @param name String the Contact firstName
      * @return the Contact
      */
-    public Contact getContact(String userName){
-        return cDAO.getContactByName(userName, mUser.getId());
+    public Contact getContact(String name){
+        return cDAO.getContactByName(name, mUser.getId());
     }
 
     /**
@@ -220,21 +246,33 @@ public class ContactManagementActivity extends FragmentActivity
     private void addItem(Contact contact) {
         // Instantiate a new "row" view.
         final ViewGroup newView = (ViewGroup) LayoutInflater.from(this).inflate(
-                R.layout.user_list_item, mContainerView, false);
+                R.layout.contact_list_item, mContainerView, false);
 
         // Instantiate the Contact attached to the listeners of this row
         final Contact currContact = contact;
+
         // Generate new IDs for the fragment containers so they can be targeted separately
         fragContainer = newView.getChildAt(1);
         fragContainer.setId(AppUtil.generateViewId());
 
-        // Set the text in the new row to the user.
-        ((TextView) newView.findViewById(android.R.id.text1)).setText(contact.getFirstName());
-
         final ImageButton editButton = (ImageButton) newView.findViewById(R.id.edit_button);
+        final TextView contactTV = (TextView) newView.findViewById(R.id.contact_text);
+
+        // Set the text in the new row to the user.
+        contactTV.setText(contact.getFirstName());
 
         // Will display the EditContactFragment
         editButton.setOnClickListener(new ImageButton.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set the current row
+                rowContact = currContact;
+                rowGroup = newView;
+                fragContainer = newView.getChildAt(1);
+                hideShowFragment();
+            }
+        });
+        contactTV.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Set the current row
@@ -308,6 +346,7 @@ public class ContactManagementActivity extends FragmentActivity
         }
         rowClicked = fragContainer.getId();
     }
+
     /**
      * Builds a confirmation Dialog box with Yes or No as choices
      *
@@ -325,6 +364,7 @@ public class ContactManagementActivity extends FragmentActivity
                         cDAO.open();
                         if (view.getId() != R.id.sync_button) {
                             if (cDAO.deleteContact(deleteContact)) {
+                                if(DEBUG) log.i(TAG, deleteContact.getFirstName() + " Delted.");
                                 Toast.makeText(mCTX,
                                         "Successfully deleted user [" + deleteContact.getFirstName()
                                                 + "]", Toast.LENGTH_SHORT).show();
@@ -338,6 +378,7 @@ public class ContactManagementActivity extends FragmentActivity
                             cDAO.close();
                         }
                         else {
+                            if(DEBUG) log.i(TAG, "Syncing Contacts in BackgroundTask.");
                             BackgroundTask task =
                                     new BackgroundTask(context, "Syncing Data", "Please wait...");
                             task.execute("syncFromManager",

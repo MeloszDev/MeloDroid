@@ -73,9 +73,16 @@ public class HomeScreenActivity extends Activity implements PopupMenu.OnMenuItem
 
         mainUser = uDAO.getUserByName(currentUser);
 
+        // Store the userID in preferences if the user exists in the DB
+        if(mainUser != null){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(getString(R.string.preference_stored_user_id), mainUser.getId());
+            editor.apply();
+        }
+
         ImageView optionsIV = (ImageView) findViewById(R.id.options_button);
         optionsIV.setOnClickListener(
-            new ImageView.OnClickListener(){
+             new ImageView.OnClickListener(){
                 public void onClick(View v) {
                     popupMenu(v);
                 }

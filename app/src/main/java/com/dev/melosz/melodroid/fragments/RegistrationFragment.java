@@ -77,8 +77,7 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
         super.onCreate(savedInstanceState);
 
         mCTX = getActivity().getApplicationContext();
-        prefs = mCTX.getSharedPreferences(getString(R.string.preference_file_key),
-                                         Context.MODE_PRIVATE);
+        prefs = AppUtil.getSharedPrefs(mCTX);
     }
 
     /**
@@ -163,7 +162,9 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString(getString(R.string.preference_stored_user),
                                          user.getUserName());
+                        editor.putInt(getString(R.string.preference_stored_user_id), user.getId());
                         editor.apply();
+
                         Toast.makeText(mCTX,
                                        "Welcome " + user.getUserName() + "!",
                                        Toast.LENGTH_SHORT).show();

@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
  * Created by marek.kozina on 9/8/2015.
@@ -264,6 +265,14 @@ public class AppUtil {
             loopingDelimiter = delimiter;
         }
         return sb.toString();
+    }
+
+    public static String[] splitDelimitedString(String delimited){
+        final String[] tokens = delimited.split(Pattern.quote(", "));
+        for(String s : tokens){
+            System.out.println("TOKENS: " + s);
+        }
+        return tokens;
     }
 
     /**
