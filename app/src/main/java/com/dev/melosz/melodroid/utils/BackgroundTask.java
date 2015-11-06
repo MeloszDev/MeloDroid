@@ -29,6 +29,11 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
     // Set to false to suppress logging
     private static final boolean DEBUG = true;
 
+    // Callback Strings
+    private static final String FROM_HOME = "syncFromHome";
+    private static final String FROM_MANAGER = "syncFromManager";
+    private static final String GATHER = "gatherContacts";
+
     // The Progress Dialog for this background task
     private ProgressDialog mProgressDialog;
 
@@ -45,6 +50,7 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
     // The callback method to call onPostExecute
     private String callback;
 
+    // The list of Contacts to send back to the Activity
     private List<Contact> contacts;
 
     /**
@@ -54,9 +60,9 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
      * @param message String the meesage of the progress dialog message box
      */
     public BackgroundTask(Context context, String title, String message){
-        this.mCTX = context;
-        this.mProgressTitle = title;
-        this.mProgressMessage = message;
+        mCTX = context;
+        mProgressTitle = title;
+        mProgressMessage = message;
         cDAO = new ContactDAO(mCTX);
     }
 
@@ -85,14 +91,14 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
         cDAO.open();
         // Switched based on the first String parameter which should be a Method Name
         switch (callback) {
-            case "syncFromManager":
-            case "syncFromHome":
+            case FROM_MANAGER:
+            case FROM_HOME:
                 if (DEBUG) log.i(TAG,
                         METHOD,
                         "Syncing contacts from case: [" + callback + "]");
                 cDAO.syncContactsWithPhone(Integer.parseInt(params[1]));
                 break;
-            case "gatherContacts":
+            case GATHER:
                 contacts = cDAO.getContactsByUserID(Integer.parseInt(params[1]));
                 break;
             default:
@@ -111,18 +117,24 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
         // Dismiss and execute callback if applicable
         mProgressDialog.dismiss();
 
+        ContactManagementActivity cmAct;
         // Instantiate activity for callback method calls
-        ContactManagementActivity cmAct = (ContactManagementActivity) mCTX;
+        if(mCTX instanceof ContactManagementActivity)
+            cmAct = (ContactManagementActivity) mCTX;
+        else
+            cmAct = null;
 
         // Determine what, if any, callback methods will be executed
         switch (callback) {
-            case "syncFromManager":
-                cmAct.gatherContacts();
-            case "syncFromHome":
+            case FROM_MANAGER:
+                if(cmAct != null)
+                    cmAct.gatherContacts();
+            case FROM_HOME:
                 Toast.makeText(mCTX, "Contacts Synced!", Toast.LENGTH_LONG).show();
                 break;
-            case "gatherContacts":
-                cmAct.populateContacts(contacts);
+            case GATHER:
+                if(cmAct != null)
+                    cmAct.populateContacts(contacts);
                 break;
             default:
                 Toast.makeText(mCTX, "An error occurred.", Toast.LENGTH_LONG).show();

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -136,6 +138,33 @@ public class ContactManagementActivity extends FragmentActivity
         );
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_contact_managment, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Navigate "up" the demo structure to the HomeScreenActivity.
+                NavUtils.navigateUpTo(this, new Intent(this, HomeScreenActivity.class));
+                return true;
+
+            case R.id.action_add_contact:
+                // Hide the "empty" view since there is now at least one item in the list.
+                findViewById(android.R.id.empty).setVisibility(View.GONE);
+
+                Toast.makeText(mCTX, "Not implemented yet!", Toast.LENGTH_SHORT).show();
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Save the userName if orientation changes
      * @param outState the savedInstanceState when destroying the activity
@@ -145,6 +174,22 @@ public class ContactManagementActivity extends FragmentActivity
         super.onSaveInstanceState(outState);
         outState.putString(KEY_USERNAME, mUser.getUserName());
     }
+
+    /**
+     * Repopulate the fragment if orientation changes
+     * @param newConfig Configuration
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        // If the rowContact is not null, then the fragment needs to be repopulated
+        if(rowContact != null) {
+            // No row was clicked, so set it to null to handle in the hideShowFragment method
+            rowClicked = null;
+            hideShowFragment();
+        }
+        super.onConfigurationChanged(newConfig);
+    }
+
     /**
      * Runs a background task to gather all of the User's contacts
      */
@@ -176,16 +221,15 @@ public class ContactManagementActivity extends FragmentActivity
 
             // Populate the UI by inserting each Contact
             for (Contact contact : contacts) {
-                int delay = 0;
                 final Contact currContact = contact;
                 // Delay the rebuilding of the contacts so the views can update.
-                handler.postDelayed(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
                         if(DEBUG) log.i(TAG, "Adding Contact: [" + currContact.getFirstName() + "]");
                         addItem(currContact);
                     }
-                }, delay);
+                });
             }
         }
     }
@@ -199,33 +243,6 @@ public class ContactManagementActivity extends FragmentActivity
         popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.menu_contact_managment, popup.getMenu());
         popup.show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.menu_contact_managment, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Navigate "up" the demo structure to the HomeScreenActivity.
-                NavUtils.navigateUpTo(this, new Intent(this, HomeScreenActivity.class));
-                return true;
-
-            case R.id.action_add_contact:
-                // Hide the "empty" view since there is now at least one item in the list.
-                findViewById(android.R.id.empty).setVisibility(View.GONE);
-
-                Toast.makeText(mCTX, "Not implemented yet!", Toast.LENGTH_SHORT).show();
-
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -336,6 +353,7 @@ public class ContactManagementActivity extends FragmentActivity
             // close the fragment container
             fragTran.commit();
             containerVisible = false;
+            rowContact = null;
             rowGroup.setBackgroundResource(0);
         } else {
             // Add the fragment which is the 2nd child of newView ViewGroup as per the xml
@@ -343,6 +361,17 @@ public class ContactManagementActivity extends FragmentActivity
             fragTran.commit();
             containerVisible = true;
             rowGroup.setBackgroundResource(R.drawable.edit_contact_border);
+
+            // Scroll the view to the top of the group after the transition animation
+            if(rowContact != null) {
+                final ScrollView sv = (ScrollView) mContainerView.getParent();
+                sv.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sv.smoothScrollTo(0, rowGroup.getTop());
+                    }
+                }, 500);
+            }
         }
         rowClicked = fragContainer.getId();
     }
@@ -358,16 +387,18 @@ public class ContactManagementActivity extends FragmentActivity
         final View view = v;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        cDAO.open();
-                        if (view.getId() != R.id.sync_button) {
+            .setCancelable(false)
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    cDAO.open();
+                    switch (view.getId()) {
+                        case R.id.delete_button:
                             if (cDAO.deleteContact(deleteContact)) {
-                                if(DEBUG) log.i(TAG, deleteContact.getFirstName() + " Delted.");
+                                if(DEBUG) log.i(TAG, deleteContact.getFirstName() + " Deleted.");
+
                                 Toast.makeText(mCTX,
-                                        "Successfully deleted user [" + deleteContact.getFirstName()
-                                                + "]", Toast.LENGTH_SHORT).show();
+                                    "Successfully deleted user [" + deleteContact.getFirstName()
+                                    + "]", Toast.LENGTH_SHORT).show();
                             }
 
                             mContainerView.removeView(view);
@@ -376,24 +407,28 @@ public class ContactManagementActivity extends FragmentActivity
                                 findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
                             }
                             cDAO.close();
-                        }
-                        else {
-                            if(DEBUG) log.i(TAG, "Syncing Contacts in BackgroundTask.");
+                            break;
+
+                        case R.id.sync_button:
+                            if (DEBUG) log.i(TAG, "Syncing Contacts in BackgroundTask.");
                             BackgroundTask task =
-                                    new BackgroundTask(context, "Syncing Data", "Please wait...");
+                                    new BackgroundTask(context,
+                                                       "Syncing Data",
+                                                       "Please wait...");
                             task.execute("syncFromManager",
                                     String.valueOf(mUser.getId()),
                                     null);
-                        }
-
+                            break;
+                        default:
+                            break;
                     }
-
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                }
+            })
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
         AlertDialog alert = builder.create();
         alert.show();
     }

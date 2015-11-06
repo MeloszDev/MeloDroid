@@ -267,12 +267,13 @@ public class AppUtil {
         return sb.toString();
     }
 
+    /**
+     * Splits a comma delimited String sequence into a String[]
+     * @param delimited String to split
+     * @return the split String[]
+     */
     public static String[] splitDelimitedString(String delimited){
-        final String[] tokens = delimited.split(Pattern.quote(", "));
-        for(String s : tokens){
-            System.out.println("TOKENS: " + s);
-        }
-        return tokens;
+        return delimited.split(Pattern.quote(", "));
     }
 
     /**
@@ -320,6 +321,7 @@ public class AppUtil {
      * Helper method to make a somewhat-randomly generated
      * @return List of randomized AppUsers
      */
+    @SuppressWarnings("unused")
     public static List<AppUser> makeDummyUserList (){
         List<AppUser> users = new ArrayList<>();
         List<String> names = new ArrayList<>();

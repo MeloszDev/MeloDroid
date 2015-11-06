@@ -85,13 +85,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.dev.melosz.melodroid.classes.IMEListenerEditText
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:id="@+id/phone_number_field"
+                android:id="@+id/contact_phone"
                 android:inputType="phone"
                 android:hint="@string/phone_field"
-                android:maxLength="20"
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
@@ -99,7 +98,7 @@
                 android:paddingRight="@dimen/activity_half_margin"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/app_main">
-            </com.dev.melosz.melodroid.classes.IMEListenerEditText>
+            </EditText>
 
             <EditText
                 android:layout_width="match_parent"
@@ -146,10 +145,9 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:id="@+id/email_field"
+                android:id="@+id/contact_email"
                 android:inputType="textEmailAddress"
                 android:hint="@string/email_field"
-                android:maxLength="34"
                 android:textColorHint="#898989"
                 android:background="@drawable/bottom_border_selector"
                 android:gravity="center_vertical|start"
@@ -199,7 +197,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:id="@+id/zip_address_field"
+                android:id="@+id/contact_zip"
                 android:inputType="number"
                 android:hint="@string/zip_field"
                 android:maxLength="5"

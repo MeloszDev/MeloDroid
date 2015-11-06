@@ -60,6 +60,7 @@
         </activity>
         <activity
             android:name=".activities.ContactManagementActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_contact_management"
             android:theme="@style/AppTheme">
             <meta-data

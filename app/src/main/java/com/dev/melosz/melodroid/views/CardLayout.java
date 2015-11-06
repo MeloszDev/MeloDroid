@@ -120,7 +120,7 @@ public class CardLayout extends RelativeLayout {
     }
 
     /**
-     *
+     * Method to listen for touch events on each CardLayout
      * @param event MotionEvent the user's motion event UI interaction
      * @return boolean whether or not a specific event has occurred
      */
@@ -131,8 +131,6 @@ public class CardLayout extends RelativeLayout {
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //                invalidate();
-
                 if(cardTouchListener != null)
                     cardTouchListener.OnCardSelected(this, selected);
                 return true;

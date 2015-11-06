@@ -122,6 +122,8 @@ public class ContactDAO extends AbstractDAO {
             if(DEBUG) log.i(TAG, METHOD, "Adding Contact: [" +
                     c.getString(c.getColumnIndex(KEY_FIRSTNAME)) + "]");
         }
+        if (c != null) c.close();
+
         return contactList;
     }
 
@@ -177,9 +179,9 @@ public class ContactDAO extends AbstractDAO {
                 if(DEBUG) log.i(TAG, METHOD, "Contact [" + setContact.getFirstName() +
                         "] Obtained. Fields below:\n." + AppUtil.prettyPrintObject(setContact));
 
-                c.close();
             }
             else if(DEBUG) log.i(TAG,  METHOD, "Contact [" + name + "] Not found.");
+            if(c != null) c.close();
         }
         return setContact;
     }
@@ -393,6 +395,7 @@ public class ContactDAO extends AbstractDAO {
                         // Add the phone numbers and concatenate with a comma delimiter if > 1
                         contactMap.put(KEY_PHONENUMBER, AppUtil.joinStrings(phoneList, ", "));
                     }
+                    phoneCur.close();
 
                     // Query and loop for every email of the contact
                     Cursor emailCur = cr.query(emailContentURI,
@@ -436,7 +439,6 @@ public class ContactDAO extends AbstractDAO {
                             zip = addressCur.getString(addressCur.getColumnIndex(tZip));
 
                             contactMap.put(KEY_ADDRESS, street);
-                    phoneCur.close();
                             contactMap.put(KEY_CITY, city);
                             contactMap.put(KEY_STATE, region);
                             contactMap.put(KEY_ZIP, zip);

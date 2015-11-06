@@ -191,7 +191,8 @@ public class MemoryGameActivity extends Activity implements
      */
     @Override
     public void onConfigurationChanged(final Configuration newConfig) {
-        System.out.println("ORIENTATION CHANGE: " + newConfig);
+        if(DEBUG) log.i(TAG, "OrientationChange: " + newConfig);
+
         if(mGridLayout != null) {
             // tear down current cards for re-draw
             mGridLayout.removeAllViews();
@@ -445,7 +446,7 @@ public class MemoryGameActivity extends Activity implements
     }
 
     /**
-     *
+     * Builds or rebuilds the card dimensions and images
      */
     private void buildCards() {
         // obtain the WxH of the current view

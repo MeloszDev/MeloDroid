@@ -2,10 +2,12 @@ package com.dev.melosz.melodroid.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.dev.melosz.melodroid.R;
@@ -37,6 +39,19 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
     private ContactDAO cDAO;
 
     private Context mCTX;
+
+    private Handler handler = new Handler();
+
+    // EditText fields
+    private EditText mPhoneET;
+    private EditText mFirstNameET;
+    private EditText mMiddleNameET;
+    private EditText mLastNameET;
+    private EditText mEmailET;
+    private EditText mAddressET;
+    private EditText mCityET;
+    private EditText mStateET;
+    private EditText mZipET;
 
     // Generic constructor
     public EditContactFragment() {}
@@ -78,7 +93,7 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        System.out.println("ONCREATEVIEWCALLED");
+
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_edit_contact, container, false);
 
@@ -97,13 +112,52 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
             hideShow(R.id.access_edit_fields, true);
         }
         else
-            System.out.println("mContact Is NULL");
-        if (mContact.getEmail() != null){
+            if(DEBUG) log.i(TAG, "No Contact present.");
+
+        if(mContact.getEmail() != null) {
             String[] emails = AppUtil.splitDelimitedString(mContact.getEmail());
         }
+        if(mContact.getPhoneNumber() != null) {
+            String[] phones = AppUtil.splitDelimitedString(mContact.getPhoneNumber());
+        }
+
+        mPhoneET = (EditText) mView.findViewById(R.id.contact_phone);
+        mFirstNameET  = (EditText) mView.findViewById(R.id.contact_first_name);
+        mMiddleNameET = (EditText) mView.findViewById(R.id.contact_middle_name);
+        mLastNameET = (EditText) mView.findViewById(R.id.contact_last_name);
+        mEmailET  = (EditText) mView.findViewById(R.id.contact_email);
+        mAddressET  = (EditText) mView.findViewById(R.id.contact_street_address);
+        mCityET = (EditText) mView.findViewById(R.id.contact_city);
+        mStateET  = (EditText) mView.findViewById(R.id.contact_state);
+        mZipET  = (EditText) mView.findViewById(R.id.contact_zip);
+
+        if(mContact != null)
+            setETs();
+
         return mView;
     }
 
+    public void setETs(){
+        // First two fields are required and therefore will not be null
+        mPhoneET.setText(mContact.getPhoneNumber());
+        mFirstNameET.setText(mContact.getFirstName());
+
+        // Optional fields
+        if(mContact.getMiddleName() != null)
+            mMiddleNameET.setText(mContact.getMiddleName());
+        if(mContact.getLastName() != null)
+            mLastNameET.setText(mContact.getLastName());
+        if(mContact.getEmail() != null)
+            mEmailET.setText(mContact.getEmail());
+        if(mContact.getAddress() != null)
+            mAddressET.setText(mContact.getAddress());
+        if(mContact.getCity() != null)
+            mCityET.setText(mContact.getCity());
+        if(mContact.getState() != null)
+            mStateET.setText(mContact.getState());
+        if(mContact.getZip() != null)
+            mZipET.setText(mContact.getZip());
+    }
     /**
      * Hides or shows the appropriate layout
      * @param id int the id of the layout
