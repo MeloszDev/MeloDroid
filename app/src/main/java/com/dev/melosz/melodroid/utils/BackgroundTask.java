@@ -9,8 +9,10 @@ import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.activities.ContactManagementActivity;
+import com.dev.melosz.melodroid.activities.MyActivity;
 import com.dev.melosz.melodroid.classes.Contact;
 import com.dev.melosz.melodroid.database.ContactDAO;
+import com.dev.melosz.melodroid.service.GMailSender;
 
 import java.util.List;
 
@@ -33,6 +35,9 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
     private static final String FROM_HOME = "syncFromHome";
     private static final String FROM_MANAGER = "syncFromManager";
     private static final String GATHER = "gatherContacts";
+    private static final String EMAIL_SIGNUP = "sendConfirmEmail";
+    private static final String EMAIL_PW_RESET = "sendPWResetLink";
+
 
     // The Progress Dialog for this background task
     private ProgressDialog mProgressDialog;
@@ -49,6 +54,7 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
 
     // The callback method to call onPostExecute
     private String callback;
+    private String callbackParam;
 
     // The list of Contacts to send back to the Activity
     private List<Contact> contacts;
@@ -101,6 +107,32 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
             case GATHER:
                 contacts = cDAO.getContactsByUserID(Integer.parseInt(params[1]));
                 break;
+            case EMAIL_SIGNUP:
+                try {
+                    String randCode = AppUtil.randNum(9000L, 1000L);
+                    GMailSender sender = new GMailSender(params[1], "Legolas2015");
+                    sender.sendMail("Welcome to MeloDroid!",
+                            "Use this code to confirm your email address: [" + randCode +"]",
+                            params[1], params[2]);
+                    callbackParam = randCode;
+                }
+                catch (Exception e){
+                    if (DEBUG) log.e(TAG, METHOD, e.getMessage());
+                }
+                break;
+            case EMAIL_PW_RESET:
+                try {
+                    String randCode = AppUtil.randNum(9000L, 1000L);
+                    GMailSender sender = new GMailSender(params[1], "Legolas2015");
+                    sender.sendMail("Password Reset",
+                            "Use this code to reset your password: [" + randCode +"]",
+                            params[1], params[2]);
+                    callbackParam = randCode;
+                }
+                catch (Exception e){
+                    if (DEBUG) log.e(TAG, METHOD, e.getMessage());
+                }
+                break;
             default:
                 break;
         }
@@ -118,11 +150,21 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
         mProgressDialog.dismiss();
 
         ContactManagementActivity cmAct;
+        MyActivity myAct;
+
         // Instantiate activity for callback method calls
-        if(mCTX instanceof ContactManagementActivity)
+        if (mCTX instanceof ContactManagementActivity){
+            myAct = null;
             cmAct = (ContactManagementActivity) mCTX;
-        else
+        }
+        else if(mCTX instanceof MyActivity){
             cmAct = null;
+            myAct = (MyActivity) mCTX;
+        }
+        else {
+            myAct = null;
+            cmAct = null;
+        }
 
         // Determine what, if any, callback methods will be executed
         switch (callback) {
@@ -135,6 +177,14 @@ public class BackgroundTask extends AsyncTask<String, String, String> {
             case GATHER:
                 if(cmAct != null)
                     cmAct.populateContacts(contacts);
+                break;
+            case EMAIL_SIGNUP:
+                if(myAct != null){
+                    myAct.checkEmailCode(callbackParam,
+                            "Confirm Email Address",
+                            "Enter 4 Digit Code");
+                }
+            case EMAIL_PW_RESET:
                 break;
             default:
                 Toast.makeText(mCTX, "An error occurred.", Toast.LENGTH_LONG).show();

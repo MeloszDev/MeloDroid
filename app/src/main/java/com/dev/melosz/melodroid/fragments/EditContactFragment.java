@@ -1,6 +1,7 @@
 package com.dev.melosz.melodroid.fragments;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.activities.ContactManagementActivity;
@@ -16,6 +18,9 @@ import com.dev.melosz.melodroid.classes.Contact;
 import com.dev.melosz.melodroid.database.ContactDAO;
 import com.dev.melosz.melodroid.utils.AppUtil;
 import com.dev.melosz.melodroid.utils.LogUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Marek Kozina 10/2/2015
@@ -102,6 +107,8 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
         closeFragImg.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mContact != null)
+                    updateContact();
                 ((ContactManagementActivity) getActivity()).hideShowFragment();
             }
         });
@@ -130,6 +137,16 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
         mCityET = (EditText) mView.findViewById(R.id.contact_city);
         mStateET  = (EditText) mView.findViewById(R.id.contact_state);
         mZipET  = (EditText) mView.findViewById(R.id.contact_zip);
+
+        mPhoneET.setOnFocusChangeListener(this);
+        mFirstNameET.setOnFocusChangeListener(this);
+        mMiddleNameET.setOnFocusChangeListener(this);
+        mLastNameET.setOnFocusChangeListener(this);
+        mEmailET.setOnFocusChangeListener(this);
+        mAddressET.setOnFocusChangeListener(this);
+        mCityET.setOnFocusChangeListener(this);
+        mStateET.setOnFocusChangeListener(this);
+        mZipET.setOnFocusChangeListener(this);
 
         if(mContact != null)
             setETs();
@@ -170,6 +187,26 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
             mView.findViewById(id).setVisibility(View.GONE);
     }
 
+
+    /**
+     * Method to update contact called from multiple methods
+     */
+    private void updateContact(){
+        String message = "";
+        try {
+            cDAO.updateContact(mContact);
+            message = "Updated Contact: [" + mContact.getFirstName() + "].";
+        }
+        catch (SQLiteException e){
+            message = "Unable to update Contact: " + e.getLocalizedMessage();
+            if(DEBUG) log.e(TAG, message);
+        }
+        finally {
+            if(DEBUG) log.i(TAG, message);
+            Toast.makeText(mCTX, message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * TODO: Validation and helper text
      * @param v View the view that the focusChange occurs on
@@ -179,13 +216,23 @@ public class EditContactFragment extends Fragment implements View.OnFocusChangeL
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
             switch (v.getId()) {
-                case 0:
+                case R.id.contact_email:
+                    List<String> emailList = new ArrayList<>();
+                    if(mContact.getEmail() != null) {
+                        String[] emails = AppUtil.splitDelimitedString(mContact.getEmail());
+                        for(String email : emails){
+                            emailList.add(email);
+                        }
+                    }
+
+                    if (emailList != null && emailList.size() > 0){
+                        System.out.println("In Email ET: [" + emailList.size() + "] emails total.");
+                    }
                     break;
                 default :
                     break;
             }
         }
     }
-
 
 }

@@ -20,7 +20,7 @@
         <item name="android:windowBackground">@drawable/dialog_custom_shadow</item>
     </style>
 
-    <!-- Progress Dialog Theme -->
+    <!-- Alert Dialog Theme -->
     <style name="AlertDialogTheme" parent="Theme.AppCompat.Dialog">
         <item name="android:textColor">@color/title_bar_text</item>
         <item name="android:windowBackground">@drawable/dialog_custom_shadow</item>

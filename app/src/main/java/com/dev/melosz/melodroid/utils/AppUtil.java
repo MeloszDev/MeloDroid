@@ -317,6 +317,10 @@ public class AppUtil {
         return uuid.toString();
     }
 
+    public static void putPreference(Context ctx, String prefKey, String prefValue){
+
+    }
+
     /**
      * Helper method to make a somewhat-randomly generated
      * @return List of randomized AppUsers
@@ -353,7 +357,7 @@ public class AppUtil {
         }
         return users;
     }
-    private static String randNum(long dig, long len) {
+    public static String randNum(long dig, long len) {
         String number;
         int num = (int) Math.abs((Math.round(Math.random() * dig) + len));
         number = Integer.toString(num);

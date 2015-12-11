@@ -22,11 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
-import com.dev.melosz.melodroid.activities.HomeScreenActivity;
 import com.dev.melosz.melodroid.activities.MyActivity;
 import com.dev.melosz.melodroid.classes.AppUser;
 import com.dev.melosz.melodroid.classes.IMEListenerEditText;
 import com.dev.melosz.melodroid.utils.AppUtil;
+import com.dev.melosz.melodroid.utils.BackgroundTask;
 import com.dev.melosz.melodroid.utils.LogUtil;
 
 /**
@@ -156,26 +156,34 @@ public class RegistrationFragment extends Fragment implements View.OnFocusChange
                 @Override
                 public void onClick(View v) {
                     AppUser user = getUserByFields();
+                    String userEmail = user.getEmail();
 
-                    if(((MyActivity) getActivity()).registerNewUser(user)) {
-                        // Add user to preferences
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString(getString(R.string.preference_stored_user),
-                                         user.getUserName());
-                        editor.putInt(getString(R.string.preference_stored_user_id), user.getId());
-                        editor.apply();
+                    BackgroundTask task = new BackgroundTask(getActivity(),
+                                    "Sending Email to " + userEmail + ".",
+                                    "Please wait...");
+                    task.execute("sendConfirmEmail",
+                            "meloszdating@gmail.com",
+                            userEmail);
 
-                        Toast.makeText(mCTX,
-                                       "Welcome " + user.getUserName() + "!",
-                                       Toast.LENGTH_SHORT).show();
-                        ((MyActivity) getActivity())
-                                .openHomeScreenActivity(HomeScreenActivity.class);
-                    }
-                    else
-                        Toast.makeText(mCTX,
-                                       "Registration Failed. Please try again.",
-                                       Toast.LENGTH_SHORT)
-                                       .show();
+//                    if(((MyActivity) getActivity()).registerNewUser(user)) {
+//                        // Add user to preferences
+//                        SharedPreferences.Editor editor = prefs.edit();
+//                        editor.putString(getString(R.string.preference_stored_user),
+//                                         user.getUserName());
+//                        editor.putInt(getString(R.string.preference_stored_user_id), user.getId());
+//                        editor.apply();
+//
+//                        Toast.makeText(mCTX,
+//                                       "Welcome " + user.getUserName() + "!",
+//                                       Toast.LENGTH_SHORT).show();
+//                        ((MyActivity) getActivity())
+//                                .openHomeScreenActivity(HomeScreenActivity.class);
+//                    }
+//                    else
+//                        Toast.makeText(mCTX,
+//                                       "Registration Failed. Please try again.",
+//                                       Toast.LENGTH_SHORT)
+//                                       .show();
                 }
             }
         );

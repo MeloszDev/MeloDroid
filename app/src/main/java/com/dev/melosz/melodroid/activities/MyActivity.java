@@ -12,8 +12,11 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dev.melosz.melodroid.R;
 import com.dev.melosz.melodroid.classes.AppUser;
@@ -313,6 +316,41 @@ public class MyActivity extends FragmentActivity {
         finish();
     }
 
+    public boolean checkEmailCode(String code, String title, String message){
+        final String codeMatch = code;
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("activeEmailCode", codeMatch);
+        editor.apply();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCTX);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        final EditText input = new EditText(MyActivity.this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(layoutParams);
+        builder.setView(input);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (codeMatch.equals(prefs.getString("activeEmailCode", null))){
+                            Toast.makeText(mCTX, "MATCH!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton("Request New Code", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        return false;
+    }
     /**
      * This method will close the app with the Back button from the main activity.
      */
